@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Bebas Neue", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --color-bg-primary: #0a0a0f;
+  --color-bg-secondary: #12121a;
+  --color-bg-card: #1a1a28;
+  --color-bg-card-hover: #222233;
+
+  --color-accent-gold: #f5c842;
+  --color-accent-green: #22c55e;
+
+  --color-pos-qb: #3b82f6;
+  --color-pos-rb: #22c55e;
+  --color-pos-wr: #f59e0b;
+  --color-pos-te: #a855f7;
+  --color-pos-flex: #06b6d4;
+  --color-pos-mvp: #f5c842;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  background: var(--color-bg-primary);
+  color: #f1f5f9;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.bg-field-pattern {
+  background-color: var(--color-bg-primary);
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(34, 197, 94, 0.08) 0%, transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+}
