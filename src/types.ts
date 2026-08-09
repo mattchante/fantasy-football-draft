@@ -42,6 +42,7 @@ export interface PlayerCard {
   badges: string[];
   categoryIds: string[];
   mvpEligible: boolean;
+  jerseyNumber?: number;
 }
 
 export interface RoundTheme {
@@ -95,3 +96,7 @@ export interface RatingTier {
 }
 
 export type GamePhase = 'home' | 'draft' | 'reveal';
+
+export type GameMode = 'normal' | 'hard';
+
+export type CardInfoLevel = 'full' | 'identity';

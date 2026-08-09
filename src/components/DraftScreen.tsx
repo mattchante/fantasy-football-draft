@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
-import type { DraftState, GeneratedRound, RosterState } from '../types';
+import type { DraftState, GameMode, GeneratedRound, RosterState } from '../types';
 import { applyPick } from '../lib/draftEngine';
 import { DraftHeader } from './DraftHeader';
+import { DraftMenu } from './DraftMenu';
 import { RoundInfo } from './RoundInfo';
 import { CardChoiceGrid } from './CardChoiceGrid';
 import { RosterTracker } from './RosterTracker';
@@ -9,20 +10,28 @@ import { RosterTracker } from './RosterTracker';
 interface DraftScreenProps {
   draftState: DraftState;
   roster: RosterState;
+  gameMode: GameMode;
   currentRound: GeneratedRound;
   onPick: (draftState: DraftState, roster: RosterState) => void;
   onComplete: (draftState: DraftState, roster: RosterState) => void;
+  onRestartDraft: () => void;
+  onMainMenu: () => void;
 }
 
 export function DraftScreen({
   draftState,
   roster,
+  gameMode,
   currentRound,
   onPick,
   onComplete,
+  onRestartDraft,
+  onMainMenu,
 }: DraftScreenProps) {
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const infoLevel = gameMode === 'hard' ? 'identity' : 'full';
 
   const handleSelect = useCallback(
     (cardId: string) => {
@@ -50,7 +59,9 @@ export function DraftScreen({
 
   return (
     <div className="min-h-screen bg-field-pattern px-4 py-8 md:px-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto relative">
+        <DraftMenu onRestartDraft={onRestartDraft} onMainMenu={onMainMenu} />
+
         <DraftHeader pickNumber={pickNumber} />
 
         <RoundInfo theme={currentRound.theme} isMvpRound={currentRound.isMvpRound} />
@@ -59,6 +70,7 @@ export function DraftScreen({
           <div className="flex-1 w-full">
             <CardChoiceGrid
               cards={currentRound.cards}
+              infoLevel={infoLevel}
               onSelect={handleSelect}
               selectedCardId={selectedCardId}
               disabled={isTransitioning}

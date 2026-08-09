@@ -1,8 +1,9 @@
-import type { PlayerCard as PlayerCardType } from '../types';
+import type { CardInfoLevel, PlayerCard as PlayerCardType } from '../types';
 import { PlayerCard } from './PlayerCard';
 
 interface CardChoiceGridProps {
   cards: PlayerCardType[];
+  infoLevel: CardInfoLevel;
   onSelect: (cardId: string) => void;
   selectedCardId: string | null;
   disabled?: boolean;
@@ -10,6 +11,7 @@ interface CardChoiceGridProps {
 
 export function CardChoiceGrid({
   cards,
+  infoLevel,
   onSelect,
   selectedCardId,
   disabled = false,
@@ -20,6 +22,8 @@ export function CardChoiceGrid({
         <PlayerCard
           key={card.id}
           card={card}
+          infoLevel={infoLevel}
+          variant="draft"
           onSelect={() => onSelect(card.id)}
           selected={selectedCardId === card.id}
           disabled={disabled}

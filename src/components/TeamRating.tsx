@@ -7,21 +7,20 @@ interface TeamRatingProps {
 
 export function TeamRating({ rating, tier }: TeamRatingProps) {
   return (
-    <div className="text-center">
-      <p className="text-sm uppercase tracking-[0.3em] text-slate-400 mb-2">
+    <div className="text-center py-4">
+      <p className="text-sm uppercase tracking-[0.3em] text-slate-400 mb-3">
         Team Rating
       </p>
       <div
-        className="font-display text-8xl md:text-9xl leading-none"
+        className="font-display text-8xl md:text-9xl leading-none rating-glow"
         style={{ color: tier.color }}
       >
         {rating}
       </div>
-      <p
-        className="mt-3 text-2xl font-bold uppercase tracking-wider"
-        style={{ color: tier.color }}
-      >
-        {tier.label}
+      <p className="mt-4">
+        <span className="tier-badge" style={{ color: tier.color }}>
+          {tier.label}
+        </span>
       </p>
     </div>
   );

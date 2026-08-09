@@ -8,7 +8,7 @@ interface FinalRosterGridProps {
 
 export function FinalRosterGrid({ roster }: FinalRosterGridProps) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 w-full max-w-5xl mx-auto">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 w-full max-w-5xl mx-auto">
       {ROSTER_SLOTS.map((slot) => {
         const card = roster[slot];
         if (!card) return null;
@@ -17,7 +17,8 @@ export function FinalRosterGrid({ roster }: FinalRosterGridProps) {
           <PlayerCard
             key={slot}
             card={card}
-            compact
+            infoLevel="full"
+            variant="reveal"
             slotLabel={slot}
           />
         );

@@ -13,10 +13,10 @@ export function RoundInfo({ theme, isMvpRound }: RoundInfoProps) {
           Final Pick
         </span>
       )}
-      <h2 className="font-display text-5xl md:text-6xl text-white tracking-wide uppercase">
+      <h2 className="font-display text-5xl md:text-6xl lg:text-7xl text-white tracking-wide uppercase">
         {theme.title}
       </h2>
-      <p className="mt-3 text-slate-400 max-w-xl mx-auto text-sm md:text-base">
+      <p className="mt-3 text-slate-500 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
         {theme.description}
       </p>
     </div>

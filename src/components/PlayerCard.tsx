@@ -1,109 +1,182 @@
-import type { PlayerCard as PlayerCardType } from '../types';
+import type { CSSProperties } from 'react';
+import type { CardInfoLevel, PlayerCard as PlayerCardType, RosterSlot } from '../types';
 import { POSITION_COLORS, getStatusLabel } from '../lib/positionColors';
+import {
+  formatSeason,
+  getTeamDisplayName,
+  parseHeadlineStat,
+  parsePlayerName,
+} from '../lib/playerDisplay';
 
 interface PlayerCardProps {
   card: PlayerCardType;
+  infoLevel?: CardInfoLevel;
+  variant?: 'draft' | 'reveal';
   onSelect?: () => void;
   selected?: boolean;
   disabled?: boolean;
-  compact?: boolean;
-  slotLabel?: string;
+  slotLabel?: RosterSlot;
 }
 
 export function PlayerCard({
   card,
+  infoLevel = 'full',
+  variant = 'draft',
   onSelect,
   selected = false,
   disabled = false,
-  compact = false,
   slotLabel,
 }: PlayerCardProps) {
   const posColor = POSITION_COLORS[card.position];
+  const { firstName, lastName } = parsePlayerName(card.name);
+  const teamName = getTeamDisplayName(card.team);
+  const showStats = infoLevel === 'full';
+  const isReveal = variant === 'reveal';
+  const isInteractive = Boolean(onSelect) && !disabled;
+  const headlineStats = card.headlineStats.slice(0, 2).map(parseHeadlineStat);
+
+  const cardStyle: CSSProperties = {
+    '--card-accent': posColor,
+  } as CSSProperties;
+
+  const frameGlow = selected
+    ? '0 0 40px rgba(245, 200, 66, 0.45), 0 12px 40px rgba(0,0,0,0.6)'
+    : isInteractive
+      ? undefined
+      : '0 4px 24px rgba(0,0,0,0.4)';
 
   return (
     <button
       type="button"
       onClick={onSelect}
       disabled={disabled || !onSelect}
-      className={`
-        group relative w-full text-left rounded-xl overflow-hidden
-        bg-bg-card border transition-all duration-200 ease-out
-        ${onSelect && !disabled ? 'cursor-pointer' : 'cursor-default'}
-        ${selected
-          ? 'scale-105 -translate-y-2 border-accent-gold shadow-[0_0_30px_rgba(245,200,66,0.3)] z-10'
-          : onSelect && !disabled
-            ? 'border-white/10 hover:scale-105 hover:-translate-y-1 hover:border-white/25 hover:shadow-xl'
-            : 'border-white/10'
-        }
-        ${disabled ? 'opacity-50' : ''}
-        ${compact ? 'max-w-[200px]' : ''}
-      `}
-      style={{ borderLeftWidth: '4px', borderLeftColor: posColor }}
+      className={[
+        'player-card',
+        isInteractive && 'player-card--interactive',
+        selected && 'player-card--selected',
+        disabled && 'player-card--disabled',
+      ].filter(Boolean).join(' ')}
+      style={{
+        ...cardStyle,
+        boxShadow: frameGlow,
+      }}
     >
-      {slotLabel && (
-        <div
-          className="absolute top-2 right-2 z-20 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide"
-          style={{ backgroundColor: posColor, color: '#0a0a0f' }}
-        >
-          {slotLabel}
-        </div>
-      )}
+      <div className="player-card__frame" style={{ '--card-accent': posColor } as CSSProperties}>
+        <div className="player-card__inner">
+          <div className="player-card__texture" aria-hidden />
 
-      {selected && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
-          <span className="font-display text-3xl text-accent-gold tracking-wider animate-pulse">
-            DRAFTED!
-          </span>
-        </div>
-      )}
-
-      <div className={`relative ${compact ? 'aspect-[4/5]' : 'aspect-[4/5]'} overflow-hidden`}>
-        <img
-          src={card.imageUrl}
-          alt={card.name}
-          className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-bg-primary via-transparent to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-3">
-          <span
-            className="inline-block px-2 py-0.5 rounded text-xs font-bold mb-1"
-            style={{ backgroundColor: posColor, color: '#0a0a0f' }}
-          >
-            {card.position}
-          </span>
-        </div>
-      </div>
-
-      <div className={`p-4 ${compact ? 'p-3' : ''}`}>
-        <h3 className={`font-bold text-white ${compact ? 'text-sm' : 'text-lg'} leading-tight`}>
-          {card.name}
-        </h3>
-        <p className="text-slate-400 text-sm mt-0.5">
-          {card.team} · {card.season}
-        </p>
-
-        <div className="flex items-center gap-2 mt-2">
-          <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300">
-            {getStatusLabel(card.status)}
-          </span>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-accent-gold/20 text-accent-gold">
-            {card.flavorTag}
-          </span>
-        </div>
-
-        <div className={`mt-3 ${compact ? 'mt-2' : ''}`}>
-          <div className="flex items-baseline gap-2">
-            <span className={`font-display ${compact ? 'text-2xl' : 'text-3xl'} text-accent-gold`}>
-              {card.fantasyPoints}
+          {/* Ghost jersey number (verified season number only) */}
+          {card.jerseyNumber != null && (
+            <span
+              className={`player-card__ghost-number ${isReveal ? 'player-card__ghost-number--reveal' : 'player-card__ghost-number--draft'}`}
+              aria-hidden
+            >
+              {card.jerseyNumber}
             </span>
-            <span className="text-slate-500 text-sm">FP</span>
-            <span className="text-slate-500 text-sm ml-auto">{card.fantasyPointsPerGame} PPG</span>
+          )}
+
+          {/* Stadium lights */}
+          <div className="player-card__stadium-light player-card__stadium-light--left" aria-hidden />
+          <div className="player-card__stadium-light player-card__stadium-light--right" aria-hidden />
+
+          {slotLabel && (
+            <span
+              className="player-card__slot-badge"
+              style={{ backgroundColor: posColor }}
+            >
+              {slotLabel}
+            </span>
+          )}
+
+          {selected && (
+            <div className="player-card__drafted-overlay">
+              <span className="font-display text-3xl text-accent-gold tracking-wider animate-pulse">
+                DRAFTED!
+              </span>
+            </div>
+          )}
+
+          {/* Hero / identity */}
+          <div
+            className={[
+              'player-card__hero',
+              isReveal ? 'player-card__hero--reveal' : 'player-card__hero--draft',
+              !showStats && 'player-card__hero--hard',
+              !showStats && isReveal && 'player-card__hero--reveal',
+            ].filter(Boolean).join(' ')}
+          >
+            <span
+              className="player-card__pos-badge"
+              style={{ backgroundColor: posColor }}
+            >
+              {card.position}
+            </span>
+
+            <div className="player-card__identity">
+              <p className="player-card__firstname">{firstName}</p>
+              <p className={`card-surname ${isReveal ? 'card-surname--reveal' : 'card-surname--draft'}`}>
+                {lastName || firstName}
+              </p>
+              <p className="player-card__team-line">
+                {teamName} · {formatSeason(card.season)}
+              </p>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
-            {card.headlineStats.map((stat) => (
-              <span key={stat} className="text-xs text-slate-400">{stat}</span>
-            ))}
-          </div>
+
+          {/* Stats (Normal / Reveal) */}
+          {showStats ? (
+            <div className={`player-card__stats ${isReveal ? 'player-card__stats--reveal' : ''}`}>
+              <div className="player-card__stat-hero">
+                <div>
+                  <p className="player-card__stat-primary-label">Fantasy Points</p>
+                  <p
+                    className={`player-card__stat-primary-value ${isReveal ? 'player-card__stat-primary-value--reveal' : ''}`}
+                    style={{ color: posColor }}
+                  >
+                    {card.fantasyPoints}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="player-card__stat-primary-label">PPG</p>
+                  <p
+                    className={`player-card__stat-primary-value ${isReveal ? 'player-card__stat-primary-value--reveal' : ''}`}
+                    style={{ color: 'rgba(255,255,255,0.85)' }}
+                  >
+                    {card.fantasyPointsPerGame}
+                  </p>
+                </div>
+              </div>
+
+              {headlineStats.map((stat) => (
+                <div key={stat.label + stat.value} className="player-card__stat-row">
+                  <span className="player-card__stat-row-label">{stat.label}</span>
+                  <span className="player-card__stat-row-value">{stat.value}</span>
+                </div>
+              ))}
+
+              <div className="player-card__chips">
+                <span className="player-card__chip player-card__chip--neutral">
+                  {getStatusLabel(card.status)}
+                </span>
+                <span
+                  className="player-card__chip player-card__chip--accent"
+                  style={{
+                    backgroundColor: `${posColor}20`,
+                    color: posColor,
+                    borderColor: `${posColor}40`,
+                  }}
+                >
+                  {card.flavorTag}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="player-card__hard-identity">
+              <span className="player-card__chip player-card__chip--neutral">
+                {getStatusLabel(card.status)}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </button>

@@ -14,23 +14,30 @@ function RosterSlotDisplay({ slot, name }: RosterSlotDisplayProps) {
   return (
     <div
       className={`
-        flex items-center gap-2 px-3 py-2 rounded-lg border transition-all
-        ${filled ? 'bg-white/5 border-white/10' : 'border-dashed border-white/20 bg-transparent'}
+        flex items-center gap-0 rounded-lg transition-all min-h-[38px]
+        ${filled
+          ? 'bg-white/[0.04] border border-white/10'
+          : 'border border-dashed border-white/15 bg-transparent'
+        }
       `}
     >
       <span
-        className="text-xs font-bold uppercase w-10 shrink-0"
+        className="text-xs font-bold uppercase w-11 shrink-0 pl-3 tracking-wide"
         style={{ color }}
       >
         {slot}
       </span>
+      <span className="w-px h-5 bg-white/10 shrink-0" />
       {filled ? (
-        <span className="text-sm text-white truncate">{name}</span>
+        <span className="text-sm text-white truncate flex-1 px-2">{name}</span>
       ) : (
-        <span className="text-xs text-slate-600 italic">Empty</span>
+        <span className="text-xs text-slate-600 italic flex-1 px-2">Empty</span>
       )}
       {filled && (
-        <span className="ml-auto w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+        <span
+          className="mr-3 w-2 h-2 rounded-full shrink-0"
+          style={{ backgroundColor: color }}
+        />
       )}
     </div>
   );
@@ -42,8 +49,8 @@ interface RosterTrackerProps {
 
 export function RosterTracker({ roster }: RosterTrackerProps) {
   return (
-    <div className="w-full lg:w-56 shrink-0">
-      <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-3">
+    <div className="w-full lg:w-60 shrink-0">
+      <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 mb-3">
         Your Roster
       </h4>
       <div className="flex flex-col gap-1.5">

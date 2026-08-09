@@ -4,6 +4,7 @@
  */
 import type { PlayerCard, PlayerStats, PlayerStatus, Position } from '../types';
 import { calculatePPR, calculatePPG } from '../lib/fantasyScoring';
+import { JERSEY_NUMBERS } from './jerseyNumbers';
 
 interface CardDef {
   id: string;
@@ -131,6 +132,7 @@ function buildCards(): PlayerCard[] {
       fantasyPoints,
       fantasyPointsPerGame,
       normalizedValue: 0,
+      jerseyNumber: JERSEY_NUMBERS[def.id],
     };
   });
 
