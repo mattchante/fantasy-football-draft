@@ -7,6 +7,9 @@ if (import.meta.env.DEV) {
   import('./lib/__dev__/validateDataset').then(({ validateDataset }) => {
     validateDataset();
   });
+  import('./lib/__dev__/validateProgression').then(({ validateProgression }) => {
+    validateProgression();
+  });
 }
 
 createRoot(document.getElementById('root')!).render(

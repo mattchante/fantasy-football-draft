@@ -11,7 +11,9 @@ import {
 interface PlayerCardProps {
   card: PlayerCardType;
   infoLevel?: CardInfoLevel;
-  variant?: 'draft' | 'reveal';
+  variant?: 'draft' | 'reveal' | 'vault';
+  vaultState?: 'collected' | 'undrafted';
+  draftCount?: number;
   onSelect?: () => void;
   selected?: boolean;
   disabled?: boolean;
@@ -22,6 +24,8 @@ export function PlayerCard({
   card,
   infoLevel = 'full',
   variant = 'draft',
+  vaultState,
+  draftCount = 0,
   onSelect,
   selected = false,
   disabled = false,
@@ -31,8 +35,10 @@ export function PlayerCard({
   const { firstName, lastName } = parsePlayerName(card.name);
   const teamName = getTeamDisplayName(card.team);
   const showStats = infoLevel === 'full';
-  const isReveal = variant === 'reveal';
-  const isInteractive = Boolean(onSelect) && !disabled;
+  const isReveal = variant === 'reveal' || variant === 'vault';
+  const isVault = variant === 'vault';
+  const isUndrafted = isVault && vaultState === 'undrafted';
+  const isInteractive = Boolean(onSelect) && !disabled && !isVault;
   const headlineStats = card.headlineStats.slice(0, 2).map(parseHeadlineStat);
 
   const cardStyle: CSSProperties = {
@@ -49,12 +55,13 @@ export function PlayerCard({
     <button
       type="button"
       onClick={onSelect}
-      disabled={disabled || !onSelect}
+      disabled={disabled || !onSelect || isVault}
       className={[
         'player-card',
         isInteractive && 'player-card--interactive',
         selected && 'player-card--selected',
         disabled && 'player-card--disabled',
+        isUndrafted && 'player-card--undrafted',
       ].filter(Boolean).join(' ')}
       style={{
         ...cardStyle,
@@ -86,6 +93,10 @@ export function PlayerCard({
             >
               {slotLabel}
             </span>
+          )}
+
+          {isVault && draftCount > 0 && (
+            <span className="player-card__draft-count">×{draftCount}</span>
           )}
 
           {selected && (

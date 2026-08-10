@@ -95,8 +95,13 @@ export interface RatingTier {
   color: string;
 }
 
-export type GamePhase = 'home' | 'draft' | 'reveal';
+export type GamePhase = 'home' | 'draft' | 'reveal' | 'history' | 'vault';
 
 export type GameMode = 'normal' | 'hard';
 
 export type CardInfoLevel = 'full' | 'identity';
+
+export interface CompletionFeedback {
+  isPersonalBest: boolean;
+  newCardIds: string[];
+}

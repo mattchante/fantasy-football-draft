@@ -1,12 +1,35 @@
+import { useState } from 'react';
 import type { GameMode } from '../types';
+import type { ProgressionData } from '../lib/progression';
+import { ConfirmDialog } from './ConfirmDialog';
+import { PersonalRecords } from './PersonalRecords';
 
 interface HomeScreenProps {
   gameMode: GameMode;
+  progression: ProgressionData;
   onGameModeChange: (mode: GameMode) => void;
   onStartDraft: () => void;
+  onOpenHistory: () => void;
+  onOpenVault: () => void;
+  onResetProgression: () => void;
 }
 
-export function HomeScreen({ gameMode, onGameModeChange, onStartDraft }: HomeScreenProps) {
+export function HomeScreen({
+  gameMode,
+  progression,
+  onGameModeChange,
+  onStartDraft,
+  onOpenHistory,
+  onOpenVault,
+  onResetProgression,
+}: HomeScreenProps) {
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  const handleConfirmReset = () => {
+    onResetProgression();
+    setShowResetConfirm(false);
+  };
+
   return (
     <div className="min-h-screen bg-field-pattern flex flex-col items-center justify-center px-4">
       <div className="text-center max-w-2xl">
@@ -55,6 +78,29 @@ export function HomeScreen({ gameMode, onGameModeChange, onStartDraft }: HomeScr
           </button>
         </div>
 
+        <div className="mt-12">
+          <PersonalRecords progression={progression} />
+        </div>
+
+        <div className="mt-6 flex flex-col items-center gap-2">
+          <button type="button" onClick={onOpenHistory} className="btn-secondary btn-secondary--quiet">
+            Draft History
+          </button>
+          <button type="button" onClick={onOpenVault} className="btn-secondary btn-secondary--quiet">
+            Card Vault
+          </button>
+        </div>
+
+        <div className="mt-10">
+          <button
+            type="button"
+            onClick={() => setShowResetConfirm(true)}
+            className="home-reset-link"
+          >
+            Reset Progression
+          </button>
+        </div>
+
         <div className="mt-16 flex justify-center gap-8 text-slate-600 text-sm">
           <span>8 Picks</span>
           <span>·</span>
@@ -63,6 +109,16 @@ export function HomeScreen({ gameMode, onGameModeChange, onStartDraft }: HomeScr
           <span>Full PPR</span>
         </div>
       </div>
+
+      {showResetConfirm && (
+        <ConfirmDialog
+          title="Reset progression?"
+          message="Reset all progression? This cannot be undone."
+          confirmLabel="Reset"
+          onConfirm={handleConfirmReset}
+          onCancel={() => setShowResetConfirm(false)}
+        />
+      )}
     </div>
   );
 }
