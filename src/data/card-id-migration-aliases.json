@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "cardIdAliases": {
+    "jamaar-chase-2024": "jamarr-chase-2024"
+  },
+  "playerIdAliases": {
+    "jamaar-chase": "jamarr-chase"
+  },
+  "notes": [
+    "The current V3 repository misspells Ja'Marr Chase as jamaar in the 2024 card ID/playerId.",
+    "Do not alias removed cards to different seasons; those are distinct collectibles."
+  ]
+}

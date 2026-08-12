@@ -1,11 +1,15 @@
 import type { PlayerCard, RosterState } from '../types';
-import { getRemainingNeeds, simulateAssign } from './roster';
+import { getRemainingNeeds, getRosterCards, simulateAssign } from './roster';
 
 interface PositionCounts {
   qb: number;
   rb: number;
   wr: number;
   te: number;
+}
+
+function rosterHasPlayerId(roster: RosterState, playerId: string): boolean {
+  return getRosterCards(roster).some(({ card }) => card.playerId === playerId);
 }
 
 function getFilledCounts(roster: RosterState): PositionCounts {
@@ -63,6 +67,10 @@ export function isSafePick(
   picksRemaining: number,
   isMvpPick = false,
 ): boolean {
+  if (rosterHasPlayerId(roster, card.playerId)) {
+    return false;
+  }
+
   if (isMvpPick) {
     return !roster.MVP;
   }

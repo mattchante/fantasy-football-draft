@@ -18,3 +18,4 @@ export type {
   VaultSummary,
 } from './types';
 export { HISTORY_CAP } from './types';
+export { migrateProgression, getCardIdAliases } from './migrateProgression';

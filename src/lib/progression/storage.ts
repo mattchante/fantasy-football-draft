@@ -1,4 +1,5 @@
 import type { ProgressionData } from './types';
+import { migrateProgression } from './migrateProgression';
 
 export const STORAGE_KEY = 'draft-cards-progression-v1';
 
@@ -108,7 +109,7 @@ export function loadProgression(): ProgressionData {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return createEmptyProgression();
-    return sanitizeProgression(JSON.parse(stored));
+    return migrateProgression(sanitizeProgression(JSON.parse(stored)));
   } catch {
     return createEmptyProgression();
   }

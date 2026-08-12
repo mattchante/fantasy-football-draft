@@ -70,6 +70,7 @@ export interface DraftState {
   roundNumber: number;
   picks: DraftedPick[];
   draftedCardIds: Set<string>;
+  draftedPlayerIds: Set<string>;
   offeredCardIds: Set<string>;
   usedThemeIds: string[];
   currentRound: GeneratedRound | null;

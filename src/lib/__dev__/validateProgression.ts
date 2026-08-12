@@ -68,7 +68,7 @@ export function validateProgression(): void {
   assert(cardIds.length > 0, 'cardDraftCounts should have entries');
 
   const vaultCards = PLAYER_CARDS.length;
-  assert(vaultCards > 0, 'PLAYER_CARDS should exist');
+  assert(vaultCards === 350, 'PLAYER_CARDS should contain 350 cards');
 
   console.log('validateProgression: all checks passed');
 }

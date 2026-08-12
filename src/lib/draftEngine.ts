@@ -37,17 +37,26 @@ function getAvailableThemes(usedThemeIds: string[]): RoundTheme[] {
   return unused.length > 0 ? unused : NORMAL_ROUND_THEMES;
 }
 
+function isCardDraftable(
+  card: PlayerCard,
+  draftedCardIds: Set<string>,
+  draftedPlayerIds: Set<string>,
+): boolean {
+  return !draftedCardIds.has(card.id) && !draftedPlayerIds.has(card.playerId);
+}
+
 function getThemeCandidates(
   theme: RoundTheme,
   roster: RosterState,
   draftedCardIds: Set<string>,
+  draftedPlayerIds: Set<string>,
   offeredCardIds: Set<string>,
   picksRemaining: number,
 ): PlayerCard[] {
   const pool = PLAYER_CARDS.filter(
     (c) =>
       theme.categoryIds.some((cat) => c.categoryIds.includes(cat)) &&
-      !draftedCardIds.has(c.id),
+      isCardDraftable(c, draftedCardIds, draftedPlayerIds),
   );
 
   const safe = filterSafeCards(pool, roster, picksRemaining);
@@ -62,6 +71,7 @@ function scoreTheme(
   theme: RoundTheme,
   roster: RosterState,
   draftedCardIds: Set<string>,
+  draftedPlayerIds: Set<string>,
   offeredCardIds: Set<string>,
   picksRemaining: number,
   usedThemeIds: string[],
@@ -70,6 +80,7 @@ function scoreTheme(
     theme,
     roster,
     draftedCardIds,
+    draftedPlayerIds,
     offeredCardIds,
     picksRemaining,
   );
@@ -94,6 +105,7 @@ function scoreTheme(
 function selectTheme(
   roster: RosterState,
   draftedCardIds: Set<string>,
+  draftedPlayerIds: Set<string>,
   offeredCardIds: Set<string>,
   usedThemeIds: string[],
   picksRemaining: number,
@@ -106,6 +118,7 @@ function selectTheme(
         theme,
         roster,
         draftedCardIds,
+        draftedPlayerIds,
         offeredCardIds,
         picksRemaining,
         usedThemeIds,
@@ -124,17 +137,20 @@ function selectTheme(
 function buildMvpRound(
   roster: RosterState,
   draftedCardIds: Set<string>,
+  draftedPlayerIds: Set<string>,
   offeredCardIds: Set<string>,
   roundNumber: number,
 ): GeneratedRound | null {
-  const pool = getMvpEligibleCards().filter((c) => !draftedCardIds.has(c.id));
+  const pool = getMvpEligibleCards().filter((c) =>
+    isCardDraftable(c, draftedCardIds, draftedPlayerIds),
+  );
   const safe = filterSafeCards(pool, roster, 1, true);
 
   const fresh = safe.filter((c) => !offeredCardIds.has(c.id));
   const candidates = fresh.length >= CARDS_PER_ROUND ? fresh : safe;
 
   if (candidates.length < CARDS_PER_ROUND) {
-    const fallback = pool.filter((c) => !draftedCardIds.has(c.id));
+    const fallback = pool.filter((c) => isCardDraftable(c, draftedCardIds, draftedPlayerIds));
     if (fallback.length < CARDS_PER_ROUND) return null;
     return {
       theme: MVP_ROUND_THEME,
@@ -155,6 +171,7 @@ function buildMvpRound(
 function buildNormalRound(
   roster: RosterState,
   draftedCardIds: Set<string>,
+  draftedPlayerIds: Set<string>,
   offeredCardIds: Set<string>,
   usedThemeIds: string[],
   roundNumber: number,
@@ -163,6 +180,7 @@ function buildNormalRound(
   const theme = selectTheme(
     roster,
     draftedCardIds,
+    draftedPlayerIds,
     offeredCardIds,
     usedThemeIds,
     needs.normalPicksRemaining,
@@ -170,7 +188,7 @@ function buildNormalRound(
 
   if (!theme) {
     const allSafe = filterSafeCards(
-      PLAYER_CARDS.filter((c) => !draftedCardIds.has(c.id)),
+      PLAYER_CARDS.filter((c) => isCardDraftable(c, draftedCardIds, draftedPlayerIds)),
       roster,
       needs.normalPicksRemaining,
     );
@@ -188,13 +206,14 @@ function buildNormalRound(
     theme,
     roster,
     draftedCardIds,
+    draftedPlayerIds,
     offeredCardIds,
     needs.normalPicksRemaining,
   );
 
   if (candidates.length < CARDS_PER_ROUND) {
     const allSafe = filterSafeCards(
-      PLAYER_CARDS.filter((c) => !draftedCardIds.has(c.id)),
+      PLAYER_CARDS.filter((c) => isCardDraftable(c, draftedCardIds, draftedPlayerIds)),
       roster,
       needs.normalPicksRemaining,
     );
@@ -219,6 +238,7 @@ export function createInitialDraftState(): DraftState {
     roundNumber: 1,
     picks: [],
     draftedCardIds: new Set(),
+    draftedPlayerIds: new Set(),
     offeredCardIds: new Set(),
     usedThemeIds: [],
     currentRound: null,
@@ -238,6 +258,7 @@ export function generateNextRound(
     return buildMvpRound(
       roster,
       state.draftedCardIds,
+      state.draftedPlayerIds,
       state.offeredCardIds,
       roundNumber,
     );
@@ -246,6 +267,7 @@ export function generateNextRound(
   return buildNormalRound(
     roster,
     state.draftedCardIds,
+    state.draftedPlayerIds,
     state.offeredCardIds,
     state.usedThemeIds,
     roundNumber,
@@ -296,6 +318,9 @@ export function applyPick(
   const draftedCardIds = new Set(state.draftedCardIds);
   draftedCardIds.add(cardId);
 
+  const draftedPlayerIds = new Set(state.draftedPlayerIds);
+  draftedPlayerIds.add(card.playerId);
+
   const usedThemeIds = state.currentRound && !isMvpPick
     ? [...state.usedThemeIds, state.currentRound.theme.id]
     : state.usedThemeIds;
@@ -309,6 +334,7 @@ export function applyPick(
     roundNumber: state.roundNumber + 1,
     picks,
     draftedCardIds,
+    draftedPlayerIds,
     offeredCardIds: state.offeredCardIds,
     usedThemeIds,
     currentRound: null,
