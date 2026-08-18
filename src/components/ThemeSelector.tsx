@@ -88,8 +88,45 @@ export function ThemeSelector() {
   );
 }
 
-export function ThemeSelectorTrigger({ className = '' }: { className?: string }) {
+export function ThemeSelectorTrigger({
+  className = '',
+  variant = 'default',
+}: {
+  className?: string;
+  variant?: 'default' | 'icon';
+}) {
   const { openThemeSelector } = useTheme();
+
+  if (variant === 'icon') {
+    return (
+      <button
+        type="button"
+        className={`theme-selector-trigger theme-selector-trigger--icon ${className}`.trim()}
+        onClick={openThemeSelector}
+        aria-label="Appearance — change theme"
+      >
+        <svg
+          className="theme-selector-trigger__icon"
+          width="18"
+          height="18"
+          viewBox="0 0 18 18"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden
+        >
+          <path
+            d="M9 2.25a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5Z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+          <circle cx="6.25" cy="7.5" r="1.1" fill="currentColor" />
+          <circle cx="10.5" cy="5.75" r="1.1" fill="currentColor" />
+          <circle cx="11.75" cy="10.25" r="1.1" fill="currentColor" />
+        </svg>
+        <span className="theme-selector-trigger__tooltip">Appearance</span>
+      </button>
+    );
+  }
 
   return (
     <button

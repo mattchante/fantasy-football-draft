@@ -2,17 +2,19 @@ import { getPersonalRecords, type ProgressionData } from '../lib/progression';
 
 interface PersonalRecordsProps {
   progression: ProgressionData;
+  compact?: boolean;
+  onReset?: () => void;
 }
 
 function formatScore(value: number | null): string {
   return value === null ? '—' : String(value);
 }
 
-export function PersonalRecords({ progression }: PersonalRecordsProps) {
+export function PersonalRecords({ progression, compact = false, onReset }: PersonalRecordsProps) {
   const records = getPersonalRecords(progression);
 
   return (
-    <div className="personal-records">
+    <div className={`personal-records${compact ? ' personal-records--compact' : ''}`}>
       <h3 className="personal-records__title">Personal Records</h3>
       <div className="personal-records__grid">
         <div className="personal-records__item">
@@ -32,6 +34,13 @@ export function PersonalRecords({ progression }: PersonalRecordsProps) {
           <span className="personal-records__value">{formatScore(records.averageScore)}</span>
         </div>
       </div>
+      {onReset && (
+        <div className="personal-records__footer">
+          <button type="button" onClick={onReset} className="home-reset-link">
+            Reset Progression
+          </button>
+        </div>
+      )}
     </div>
   );
 }
