@@ -24,18 +24,19 @@ export function ConfirmDialog({
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"
+        className="absolute inset-0 backdrop-blur-[2px]"
+        style={{ background: 'var(--theme-bg-overlay)' }}
         aria-label="Close dialog"
         onClick={onCancel}
       />
-      <div className="relative w-full max-w-sm rounded-xl border border-white/10 bg-bg-secondary p-6 shadow-2xl">
+      <div className="relative w-full max-w-sm rounded-xl border border-theme bg-theme-secondary p-6 shadow-2xl">
         <h3
           id="confirm-dialog-title"
-          className="font-display text-2xl text-white uppercase tracking-wide"
+          className="font-display text-2xl text-theme-primary uppercase tracking-wide"
         >
           {title}
         </h3>
-        <p className="mt-3 text-sm text-slate-400 leading-relaxed">{message}</p>
+        <p className="mt-3 text-sm text-theme-muted leading-relaxed">{message}</p>
         <div className="mt-6 flex gap-3 justify-end">
           <button type="button" onClick={onCancel} className="btn-secondary">
             {cancelLabel}

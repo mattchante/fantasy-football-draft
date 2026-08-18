@@ -25,19 +25,19 @@ export function TeamReveal({
     <div className="min-h-screen bg-field-pattern px-4 py-12 md:px-8">
       <div className="max-w-6xl mx-auto">
         {gameMode === 'hard' && (
-          <p className="text-center text-xs uppercase tracking-widest text-slate-500 mb-4">
+          <p className="text-center text-xs uppercase tracking-widest text-theme-faint mb-4">
             Hard Mode — Full stats revealed
           </p>
         )}
 
-        <h1 className="text-center font-display text-4xl text-white uppercase tracking-wide mb-6">
+        <h1 className="text-center font-display text-4xl text-theme-primary uppercase tracking-wide mb-6">
           My Team
         </h1>
 
         <TeamRating rating={rating} tier={tier} />
 
         <div className="mt-12 mb-8">
-          <h2 className="text-center font-display text-2xl text-slate-400 uppercase tracking-wide mb-8">
+          <h2 className="text-center font-display text-2xl text-theme-muted uppercase tracking-wide mb-8">
             Your Roster
           </h2>
           <FinalRosterGrid roster={roster} />

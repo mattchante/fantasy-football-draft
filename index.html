@@ -11,6 +11,15 @@
       rel="stylesheet"
     />
     <title>Draft Cards — Fantasy Football</title>
+    <script>
+      (function () {
+        var key = 'draft-cards-theme-v1';
+        var valid = ['gridiron', 'monochrome', 'ice', 'crimson', 'royal'];
+        var theme = localStorage.getItem(key);
+        if (valid.indexOf(theme) === -1) theme = 'gridiron';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

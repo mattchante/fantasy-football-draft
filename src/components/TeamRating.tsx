@@ -8,7 +8,7 @@ interface TeamRatingProps {
 export function TeamRating({ rating, tier }: TeamRatingProps) {
   return (
     <div className="text-center py-4">
-      <p className="text-sm uppercase tracking-[0.3em] text-slate-400 mb-3">
+      <p className="text-sm uppercase tracking-[0.3em] text-theme-muted mb-3">
         Team Rating
       </p>
       <div

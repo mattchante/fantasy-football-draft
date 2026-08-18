@@ -101,7 +101,7 @@ export function PlayerCard({
 
           {selected && (
             <div className="player-card__drafted-overlay">
-              <span className="font-display text-3xl text-accent-gold tracking-wider animate-pulse">
+              <span className="font-display text-3xl text-theme-gold tracking-wider animate-pulse">
                 DRAFTED!
               </span>
             </div>

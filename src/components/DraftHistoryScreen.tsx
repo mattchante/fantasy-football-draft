@@ -14,7 +14,7 @@ export function DraftHistoryScreen({ progression, onBack }: DraftHistoryScreenPr
           <button type="button" onClick={onBack} className="btn-secondary btn-secondary--quiet">
             Back
           </button>
-          <h1 className="font-display text-4xl text-white uppercase tracking-wide">Draft History</h1>
+          <h1 className="font-display text-4xl text-theme-primary uppercase tracking-wide">Draft History</h1>
         </div>
 
         {progression.history.length === 0 ? (

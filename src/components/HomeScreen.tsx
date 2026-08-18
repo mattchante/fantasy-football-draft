@@ -3,6 +3,7 @@ import type { GameMode } from '../types';
 import type { ProgressionData } from '../lib/progression';
 import { ConfirmDialog } from './ConfirmDialog';
 import { PersonalRecords } from './PersonalRecords';
+import { ThemeSelectorTrigger } from './ThemeSelector';
 
 interface HomeScreenProps {
   gameMode: GameMode;
@@ -34,16 +35,16 @@ export function HomeScreen({
     <div className="min-h-screen bg-field-pattern flex flex-col items-center justify-center px-4">
       <div className="text-center max-w-2xl">
         <div className="mb-2">
-          <span className="text-accent-green text-sm font-semibold uppercase tracking-[0.3em]">
+          <span className="text-theme-accent text-sm font-semibold uppercase tracking-[0.3em]">
             Fantasy Football
           </span>
         </div>
 
-        <h1 className="font-display text-7xl md:text-8xl text-white tracking-wide uppercase leading-none landing-title-glow">
+        <h1 className="font-display text-7xl md:text-8xl text-theme-primary tracking-wide uppercase leading-none landing-title-glow">
           Draft Cards
         </h1>
 
-        <p className="mt-6 text-slate-400 text-lg max-w-md mx-auto">
+        <p className="mt-6 text-theme-muted text-lg max-w-md mx-auto">
           Build your ultimate fantasy roster across themed draft rounds.
           Pick wisely. Draft again.
         </p>
@@ -66,7 +67,7 @@ export function HomeScreen({
             </button>
           </div>
           {gameMode === 'hard' && (
-            <p className="text-xs text-slate-500 italic">
+            <p className="text-xs text-theme-faint italic">
               Stats hidden during draft — test your ball knowledge
             </p>
           )}
@@ -83,6 +84,7 @@ export function HomeScreen({
         </div>
 
         <div className="mt-6 flex flex-col items-center gap-2">
+          <ThemeSelectorTrigger />
           <button type="button" onClick={onOpenHistory} className="btn-secondary btn-secondary--quiet">
             Draft History
           </button>
@@ -101,7 +103,7 @@ export function HomeScreen({
           </button>
         </div>
 
-        <div className="mt-16 flex justify-center gap-8 text-slate-600 text-sm">
+        <div className="mt-16 flex justify-center gap-8 text-theme-faint text-sm">
           <span>8 Picks</span>
           <span>·</span>
           <span>Themed Rounds</span>

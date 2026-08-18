@@ -18,7 +18,7 @@ export function CardVaultScreen({ progression, onBack }: CardVaultScreenProps) {
           <button type="button" onClick={onBack} className="btn-secondary btn-secondary--quiet">
             Back
           </button>
-          <h1 className="font-display text-4xl text-white uppercase tracking-wide">Card Vault</h1>
+          <h1 className="font-display text-4xl text-theme-primary uppercase tracking-wide">Card Vault</h1>
         </div>
 
         <VaultSummaryPanel summary={summary} />

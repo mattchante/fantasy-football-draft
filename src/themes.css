@@ -1,0 +1,327 @@
+/* Semantic theme tokens — applied via data-theme on documentElement */
+
+:root,
+[data-theme='gridiron'] {
+  --theme-bg-primary: #080c0a;
+  --theme-bg-secondary: #0f1410;
+  --theme-bg-elevated: rgba(15, 20, 16, 0.85);
+  --theme-bg-panel: rgba(15, 20, 16, 0.75);
+  --theme-bg-card: #141a16;
+  --theme-bg-card-hover: #1a221c;
+  --theme-bg-card-outer: #0c0e12;
+  --theme-bg-card-inner: #0a0c10;
+  --theme-bg-overlay: rgba(0, 0, 0, 0.6);
+  --theme-bg-popover: #12141a;
+
+  --theme-text-primary: #f1f5f9;
+  --theme-text-secondary: rgba(241, 245, 249, 0.9);
+  --theme-text-muted: rgba(148, 163, 184, 0.85);
+  --theme-text-faint: rgba(148, 163, 184, 0.6);
+  --theme-text-inverse: #0a0a0f;
+
+  --theme-border: rgba(255, 255, 255, 0.08);
+  --theme-border-strong: rgba(255, 255, 255, 0.15);
+  --theme-border-subtle: rgba(255, 255, 255, 0.06);
+
+  --theme-accent-primary: #22c55e;
+  --theme-accent-primary-hover: #4ade80;
+  --theme-accent-primary-muted: rgba(34, 197, 94, 0.2);
+  --theme-accent-primary-soft: rgba(34, 197, 94, 0.12);
+  --theme-accent-gold: #e8b830;
+  --theme-accent-gold-bright: #f5d060;
+  --theme-accent-gold-dark: #c99a20;
+  --theme-accent-gold-shadow: #9a7518;
+
+  --theme-ambient-glow: rgba(34, 197, 94, 0.12);
+  --theme-ambient-vignette: rgba(0, 0, 0, 0.45);
+  --theme-ambient-bottom: rgba(0, 0, 0, 0.5);
+  --theme-grid-line: rgba(255, 255, 255, 0.025);
+  --theme-title-glow: rgba(34, 197, 94, 0.25);
+  --theme-shadow: rgba(0, 0, 0, 0.5);
+  --theme-stadium-light-opacity: 0.35;
+
+  --theme-btn-primary-text: #0a0a0f;
+  --theme-btn-primary-glow: rgba(245, 200, 66, 0.25);
+
+  --theme-progress-complete-bg: rgba(34, 197, 94, 0.35);
+  --theme-progress-complete-border: rgba(34, 197, 94, 0.6);
+  --theme-progress-complete-text: #86efac;
+  --theme-progress-current-bg: rgba(34, 197, 94, 0.15);
+  --theme-progress-current-border: #22c55e;
+  --theme-progress-current-text: #4ade80;
+  --theme-progress-current-glow: rgba(34, 197, 94, 0.4);
+
+  --theme-badge-best-text: #f5d060;
+  --theme-badge-best-bg: rgba(232, 184, 48, 0.12);
+  --theme-badge-best-border: rgba(232, 184, 48, 0.35);
+  --theme-badge-cards-text: #4ade80;
+  --theme-badge-cards-bg: rgba(34, 197, 94, 0.12);
+  --theme-badge-cards-border: rgba(34, 197, 94, 0.35);
+
+  --color-pos-qb: #3b82f6;
+  --color-pos-rb: #22c55e;
+  --color-pos-wr: #f59e0b;
+  --color-pos-te: #a855f7;
+  --color-pos-flex: #06b6d4;
+  --color-pos-mvp: #f5c842;
+}
+
+[data-theme='monochrome'] {
+  --theme-bg-primary: #0a0a0a;
+  --theme-bg-secondary: #141414;
+  --theme-bg-elevated: rgba(20, 20, 20, 0.92);
+  --theme-bg-panel: rgba(18, 18, 18, 0.88);
+  --theme-bg-card: #1a1a1a;
+  --theme-bg-card-hover: #242424;
+  --theme-bg-card-outer: #111111;
+  --theme-bg-card-inner: #0d0d0d;
+  --theme-bg-overlay: rgba(0, 0, 0, 0.72);
+  --theme-bg-popover: #161616;
+
+  --theme-text-primary: #f5f5f5;
+  --theme-text-secondary: rgba(245, 245, 245, 0.92);
+  --theme-text-muted: rgba(163, 163, 163, 0.9);
+  --theme-text-faint: rgba(115, 115, 115, 0.85);
+  --theme-text-inverse: #0a0a0a;
+
+  --theme-border: rgba(255, 255, 255, 0.12);
+  --theme-border-strong: rgba(255, 255, 255, 0.22);
+  --theme-border-subtle: rgba(255, 255, 255, 0.06);
+
+  --theme-accent-primary: #f5f5f5;
+  --theme-accent-primary-hover: #ffffff;
+  --theme-accent-primary-muted: rgba(255, 255, 255, 0.12);
+  --theme-accent-primary-soft: rgba(255, 255, 255, 0.06);
+  --theme-accent-gold: #e5e5e5;
+  --theme-accent-gold-bright: #f5f5f5;
+  --theme-accent-gold-dark: #a3a3a3;
+  --theme-accent-gold-shadow: #525252;
+
+  --theme-ambient-glow: transparent;
+  --theme-ambient-vignette: rgba(0, 0, 0, 0.55);
+  --theme-ambient-bottom: rgba(0, 0, 0, 0.35);
+  --theme-grid-line: rgba(255, 255, 255, 0.045);
+  --theme-title-glow: rgba(255, 255, 255, 0.08);
+  --theme-shadow: rgba(0, 0, 0, 0.65);
+  --theme-stadium-light-opacity: 0.08;
+
+  --theme-btn-primary-text: #0a0a0a;
+  --theme-btn-primary-glow: rgba(255, 255, 255, 0.12);
+
+  --theme-progress-complete-bg: rgba(255, 255, 255, 0.18);
+  --theme-progress-complete-border: rgba(255, 255, 255, 0.45);
+  --theme-progress-complete-text: #f5f5f5;
+  --theme-progress-current-bg: rgba(255, 255, 255, 0.08);
+  --theme-progress-current-border: #ffffff;
+  --theme-progress-current-text: #ffffff;
+  --theme-progress-current-glow: rgba(255, 255, 255, 0.15);
+
+  --theme-badge-best-text: #f5f5f5;
+  --theme-badge-best-bg: rgba(255, 255, 255, 0.08);
+  --theme-badge-best-border: rgba(255, 255, 255, 0.28);
+  --theme-badge-cards-text: #d4d4d4;
+  --theme-badge-cards-bg: rgba(255, 255, 255, 0.06);
+  --theme-badge-cards-border: rgba(255, 255, 255, 0.2);
+
+  --color-pos-qb: #f0f0f0;
+  --color-pos-rb: #c9c9c9;
+  --color-pos-wr: #9a9a9a;
+  --color-pos-te: #737373;
+  --color-pos-flex: #525252;
+  --color-pos-mvp: #ffffff;
+}
+
+[data-theme='ice'] {
+  --theme-bg-primary: #0a0e1a;
+  --theme-bg-secondary: #0f1628;
+  --theme-bg-elevated: rgba(15, 22, 40, 0.9);
+  --theme-bg-panel: rgba(15, 23, 42, 0.82);
+  --theme-bg-card: #131c31;
+  --theme-bg-card-hover: #1a2740;
+  --theme-bg-card-outer: #0c1220;
+  --theme-bg-card-inner: #0a101c;
+  --theme-bg-overlay: rgba(2, 6, 23, 0.72);
+  --theme-bg-popover: #111827;
+
+  --theme-text-primary: #f0f9ff;
+  --theme-text-secondary: rgba(224, 242, 254, 0.92);
+  --theme-text-muted: rgba(148, 163, 184, 0.88);
+  --theme-text-faint: rgba(100, 116, 139, 0.85);
+  --theme-text-inverse: #0c1220;
+
+  --theme-border: rgba(148, 163, 184, 0.14);
+  --theme-border-strong: rgba(125, 211, 252, 0.22);
+  --theme-border-subtle: rgba(148, 163, 184, 0.08);
+
+  --theme-accent-primary: #22d3ee;
+  --theme-accent-primary-hover: #67e8f9;
+  --theme-accent-primary-muted: rgba(34, 211, 238, 0.16);
+  --theme-accent-primary-soft: rgba(34, 211, 238, 0.1);
+  --theme-accent-gold: #7dd3fc;
+  --theme-accent-gold-bright: #bae6fd;
+  --theme-accent-gold-dark: #0284c7;
+  --theme-accent-gold-shadow: #0369a1;
+
+  --theme-ambient-glow: rgba(34, 211, 238, 0.1);
+  --theme-ambient-vignette: rgba(2, 6, 23, 0.5);
+  --theme-ambient-bottom: rgba(2, 6, 23, 0.55);
+  --theme-grid-line: rgba(125, 211, 252, 0.04);
+  --theme-title-glow: rgba(34, 211, 238, 0.18);
+  --theme-shadow: rgba(2, 6, 23, 0.55);
+  --theme-stadium-light-opacity: 0.28;
+
+  --theme-btn-primary-text: #0c1220;
+  --theme-btn-primary-glow: rgba(34, 211, 238, 0.22);
+
+  --theme-progress-complete-bg: rgba(34, 211, 238, 0.22);
+  --theme-progress-complete-border: rgba(34, 211, 238, 0.55);
+  --theme-progress-complete-text: #a5f3fc;
+  --theme-progress-current-bg: rgba(34, 211, 238, 0.1);
+  --theme-progress-current-border: #22d3ee;
+  --theme-progress-current-text: #67e8f9;
+  --theme-progress-current-glow: rgba(34, 211, 238, 0.28);
+
+  --theme-badge-best-text: #bae6fd;
+  --theme-badge-best-bg: rgba(125, 211, 252, 0.12);
+  --theme-badge-best-border: rgba(125, 211, 252, 0.35);
+  --theme-badge-cards-text: #67e8f9;
+  --theme-badge-cards-bg: rgba(34, 211, 238, 0.1);
+  --theme-badge-cards-border: rgba(34, 211, 238, 0.32);
+
+  --color-pos-qb: #38bdf8;
+  --color-pos-rb: #22d3ee;
+  --color-pos-wr: #7dd3fc;
+  --color-pos-te: #93c5fd;
+  --color-pos-flex: #67e8f9;
+  --color-pos-mvp: #e0f2fe;
+}
+
+[data-theme='crimson'] {
+  --theme-bg-primary: #0c0608;
+  --theme-bg-secondary: #16080c;
+  --theme-bg-elevated: rgba(22, 8, 12, 0.92);
+  --theme-bg-panel: rgba(24, 10, 14, 0.85);
+  --theme-bg-card: #1a0a10;
+  --theme-bg-card-hover: #240e16;
+  --theme-bg-card-outer: #120608;
+  --theme-bg-card-inner: #0f0508;
+  --theme-bg-overlay: rgba(0, 0, 0, 0.72);
+  --theme-bg-popover: #18080c;
+
+  --theme-text-primary: #faf5f0;
+  --theme-text-secondary: rgba(254, 242, 242, 0.92);
+  --theme-text-muted: rgba(214, 180, 180, 0.82);
+  --theme-text-faint: rgba(168, 120, 120, 0.75);
+  --theme-text-inverse: #1a0508;
+
+  --theme-border: rgba(254, 202, 202, 0.1);
+  --theme-border-strong: rgba(220, 38, 38, 0.28);
+  --theme-border-subtle: rgba(254, 202, 202, 0.06);
+
+  --theme-accent-primary: #dc2626;
+  --theme-accent-primary-hover: #ef4444;
+  --theme-accent-primary-muted: rgba(220, 38, 38, 0.18);
+  --theme-accent-primary-soft: rgba(220, 38, 38, 0.1);
+  --theme-accent-gold: #fbbf24;
+  --theme-accent-gold-bright: #fcd34d;
+  --theme-accent-gold-dark: #b45309;
+  --theme-accent-gold-shadow: #78350f;
+
+  --theme-ambient-glow: rgba(220, 38, 38, 0.08);
+  --theme-ambient-vignette: rgba(0, 0, 0, 0.58);
+  --theme-ambient-bottom: rgba(0, 0, 0, 0.62);
+  --theme-grid-line: rgba(254, 202, 202, 0.03);
+  --theme-title-glow: rgba(220, 38, 38, 0.16);
+  --theme-shadow: rgba(0, 0, 0, 0.62);
+  --theme-stadium-light-opacity: 0.22;
+
+  --theme-btn-primary-text: #1a0508;
+  --theme-btn-primary-glow: rgba(251, 191, 36, 0.2);
+
+  --theme-progress-complete-bg: rgba(220, 38, 38, 0.28);
+  --theme-progress-complete-border: rgba(248, 113, 113, 0.55);
+  --theme-progress-complete-text: #fecaca;
+  --theme-progress-current-bg: rgba(220, 38, 38, 0.12);
+  --theme-progress-current-border: #dc2626;
+  --theme-progress-current-text: #f87171;
+  --theme-progress-current-glow: rgba(220, 38, 38, 0.28);
+
+  --theme-badge-best-text: #fcd34d;
+  --theme-badge-best-bg: rgba(251, 191, 36, 0.1);
+  --theme-badge-best-border: rgba(251, 191, 36, 0.32);
+  --theme-badge-cards-text: #fca5a5;
+  --theme-badge-cards-bg: rgba(220, 38, 38, 0.1);
+  --theme-badge-cards-border: rgba(220, 38, 38, 0.3);
+
+  --color-pos-qb: #f87171;
+  --color-pos-rb: #ef4444;
+  --color-pos-wr: #fb923c;
+  --color-pos-te: #fbbf24;
+  --color-pos-flex: #fca5a5;
+  --color-pos-mvp: #fef3c7;
+}
+
+[data-theme='royal'] {
+  --theme-bg-primary: #0a0a14;
+  --theme-bg-secondary: #12101f;
+  --theme-bg-elevated: rgba(18, 16, 31, 0.92);
+  --theme-bg-panel: rgba(20, 18, 36, 0.86);
+  --theme-bg-card: #171428;
+  --theme-bg-card-hover: #201c36;
+  --theme-bg-card-outer: #100e1c;
+  --theme-bg-card-inner: #0d0b18;
+  --theme-bg-overlay: rgba(5, 4, 12, 0.74);
+  --theme-bg-popover: #151226;
+
+  --theme-text-primary: #faf7ef;
+  --theme-text-secondary: rgba(245, 240, 255, 0.92);
+  --theme-text-muted: rgba(196, 181, 253, 0.75);
+  --theme-text-faint: rgba(148, 130, 190, 0.72);
+  --theme-text-inverse: #120f1f;
+
+  --theme-border: rgba(196, 181, 253, 0.12);
+  --theme-border-strong: rgba(167, 139, 250, 0.24);
+  --theme-border-subtle: rgba(196, 181, 253, 0.06);
+
+  --theme-accent-primary: #7c3aed;
+  --theme-accent-primary-hover: #8b5cf6;
+  --theme-accent-primary-muted: rgba(124, 58, 237, 0.18);
+  --theme-accent-primary-soft: rgba(124, 58, 237, 0.1);
+  --theme-accent-gold: #c9a227;
+  --theme-accent-gold-bright: #e8c547;
+  --theme-accent-gold-dark: #92700c;
+  --theme-accent-gold-shadow: #6b4f0a;
+
+  --theme-ambient-glow: rgba(124, 58, 237, 0.1);
+  --theme-ambient-vignette: rgba(5, 4, 12, 0.55);
+  --theme-ambient-bottom: rgba(5, 4, 12, 0.58);
+  --theme-grid-line: rgba(196, 181, 253, 0.035);
+  --theme-title-glow: rgba(201, 162, 39, 0.14);
+  --theme-shadow: rgba(5, 4, 12, 0.58);
+  --theme-stadium-light-opacity: 0.26;
+
+  --theme-btn-primary-text: #120f1f;
+  --theme-btn-primary-glow: rgba(201, 162, 39, 0.22);
+
+  --theme-progress-complete-bg: rgba(124, 58, 237, 0.24);
+  --theme-progress-complete-border: rgba(167, 139, 250, 0.5);
+  --theme-progress-complete-text: #ddd6fe;
+  --theme-progress-current-bg: rgba(124, 58, 237, 0.12);
+  --theme-progress-current-border: #7c3aed;
+  --theme-progress-current-text: #a78bfa;
+  --theme-progress-current-glow: rgba(124, 58, 237, 0.28);
+
+  --theme-badge-best-text: #e8c547;
+  --theme-badge-best-bg: rgba(201, 162, 39, 0.1);
+  --theme-badge-best-border: rgba(201, 162, 39, 0.32);
+  --theme-badge-cards-text: #a78bfa;
+  --theme-badge-cards-bg: rgba(124, 58, 237, 0.1);
+  --theme-badge-cards-border: rgba(124, 58, 237, 0.3);
+
+  --color-pos-qb: #818cf8;
+  --color-pos-rb: #a78bfa;
+  --color-pos-wr: #c9a227;
+  --color-pos-te: #8b5cf6;
+  --color-pos-flex: #a5b4fc;
+  --color-pos-mvp: #e8c547;
+}

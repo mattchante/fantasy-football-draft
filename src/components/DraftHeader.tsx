@@ -14,7 +14,7 @@ export function DraftHeader({ pickNumber }: DraftHeaderProps) {
   return (
     <header className="w-full mb-6">
       <div className="mb-3">
-        <span className="text-sm text-slate-400 uppercase tracking-widest">
+        <span className="text-sm text-theme-muted uppercase tracking-widest">
           Pick {pickNumber} of {TOTAL_PICKS}
         </span>
       </div>

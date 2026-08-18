@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ConfirmDialog } from './ConfirmDialog';
+import { useTheme } from '../lib/theme';
 
 type PendingAction = 'restart' | 'mainMenu' | null;
 
@@ -9,6 +10,7 @@ interface DraftMenuProps {
 }
 
 export function DraftMenu({ onRestartDraft, onMainMenu }: DraftMenuProps) {
+  const { openThemeSelector } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
 
@@ -62,6 +64,16 @@ export function DraftMenu({ onRestartDraft, onMainMenu }: DraftMenuProps) {
               </button>
               <button type="button" className="menu-popover-item" onClick={handleMainMenuClick}>
                 Main Menu
+              </button>
+              <button
+                type="button"
+                className="menu-popover-item"
+                onClick={() => {
+                  closeMenu();
+                  openThemeSelector();
+                }}
+              >
+                Appearance
               </button>
               <button type="button" className="menu-popover-item menu-popover-item--muted" onClick={closeMenu}>
                 Cancel
