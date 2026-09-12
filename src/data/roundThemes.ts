@@ -40,7 +40,7 @@ export const ROUND_THEMES: RoundTheme[] = [
   {
     id: 'current-superstars',
     title: 'Current Superstars',
-    description: 'The best of the modern NFL. Peak performance from the most recent season.',
+    description: 'Modern NFL stars. Standout seasons from the current era.',
     categoryIds: ['current-superstars'],
   },
   {

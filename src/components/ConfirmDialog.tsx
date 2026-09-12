@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 interface ConfirmDialogProps {
   title: string;
   message: string;
@@ -15,9 +17,40 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const dialog = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    const panel = dialog.current;
+    panel?.querySelector<HTMLButtonElement>('[data-cancel]')?.focus();
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onCancel();
+      }
+      if (event.key !== 'Tab') return;
+      const buttons = panel?.querySelectorAll<HTMLButtonElement>('button');
+      if (!buttons?.length) return;
+      const first = buttons[0],
+        last = buttons[buttons.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      }
+      if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    panel?.addEventListener('keydown', handleKey);
+    return () => {
+      panel?.removeEventListener('keydown', handleKey);
+      previous?.focus();
+    };
+  }, [onCancel]);
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      ref={dialog}
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-dialog-title"
@@ -36,12 +69,23 @@ export function ConfirmDialog({
         >
           {title}
         </h3>
-        <p className="mt-3 text-sm text-theme-muted leading-relaxed">{message}</p>
+        <p className="mt-3 text-sm text-theme-muted leading-relaxed">
+          {message}
+        </p>
         <div className="mt-6 flex gap-3 justify-end">
-          <button type="button" onClick={onCancel} className="btn-secondary">
+          <button
+            data-cancel
+            type="button"
+            onClick={onCancel}
+            className="btn-secondary"
+          >
             {cancelLabel}
           </button>
-          <button type="button" onClick={onConfirm} className="btn-secondary btn-secondary--danger">
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="btn-secondary btn-secondary--danger"
+          >
             {confirmLabel}
           </button>
         </div>

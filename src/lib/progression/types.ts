@@ -17,10 +17,12 @@ export interface CompletedDraftSnapshot {
   tierLabel: string;
   tierColor: string;
   roster: HistoryRosterEntry[];
+  missionIds?: string[];
 }
 
 export interface ProgressionData {
   version: 1;
+  missionWins?: Record<string, number>;
   totalDrafts: number;
   totalScore: number;
   bestScores: {

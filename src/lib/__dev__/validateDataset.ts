@@ -208,4 +208,5 @@ export function validateDataset(): void {
   }
 
   console.groupEnd();
+  if (errors > 0) throw new Error(`Dataset validation failed: ${errors} errors`);
 }

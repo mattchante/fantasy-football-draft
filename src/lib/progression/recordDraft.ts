@@ -1,6 +1,6 @@
 import type { GameMode, RatingTier, RosterState } from '../../types';
 import { getRosterCards } from '../roster';
-import { saveProgression } from './storage';
+import { getMissionProgress } from '../missions';
 import type {
   CompletedDraftSnapshot,
   CompletionFeedback,
@@ -63,7 +63,16 @@ export function recordCompletedDraft(
     updatedCounts[cardId] = (updatedCounts[cardId] ?? 0) + 1;
   }
 
+  const missionIds = getMissionProgress(roster)
+    .filter((m) => m.complete)
+    .map((m) => m.id);
+  const missionWins = { ...progression.missionWins };
+  missionIds.forEach((id) => {
+    missionWins[id] = (missionWins[id] ?? 0) + 1;
+  });
+
   const snapshot: CompletedDraftSnapshot = {
+    missionIds,
     id: crypto.randomUUID(),
     completedAt: new Date().toISOString(),
     mode,
@@ -80,14 +89,13 @@ export function recordCompletedDraft(
 
   const updated: ProgressionData = {
     version: 1,
+    missionWins,
     totalDrafts: progression.totalDrafts + 1,
     totalScore: progression.totalScore + rating,
     bestScores: updatedBestScores,
     cardDraftCounts: updatedCounts,
     history: [snapshot, ...progression.history].slice(0, HISTORY_CAP),
   };
-
-  saveProgression(updated);
 
   return { progression: updated, feedback };
 }

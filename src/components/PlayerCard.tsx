@@ -1,5 +1,9 @@
 import type { CSSProperties } from 'react';
-import type { CardInfoLevel, PlayerCard as PlayerCardType, RosterSlot } from '../types';
+import type {
+  CardInfoLevel,
+  PlayerCard as PlayerCardType,
+  RosterSlot,
+} from '../types';
 import { POSITION_COLORS, getStatusLabel } from '../lib/positionColors';
 import {
   formatSeason,
@@ -58,17 +62,24 @@ export function PlayerCard({
       disabled={disabled || !onSelect || isVault}
       className={[
         'player-card',
+        `player-card--${variant}`,
+        !showStats && 'player-card--identity',
         isInteractive && 'player-card--interactive',
         selected && 'player-card--selected',
         disabled && 'player-card--disabled',
         isUndrafted && 'player-card--undrafted',
-      ].filter(Boolean).join(' ')}
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={{
         ...cardStyle,
         boxShadow: frameGlow,
       }}
     >
-      <div className="player-card__frame" style={{ '--card-accent': posColor } as CSSProperties}>
+      <div
+        className="player-card__frame"
+        style={{ '--card-accent': posColor } as CSSProperties}
+      >
         <div className="player-card__inner">
           <div className="player-card__texture" aria-hidden />
 
@@ -83,8 +94,14 @@ export function PlayerCard({
           )}
 
           {/* Stadium lights */}
-          <div className="player-card__stadium-light player-card__stadium-light--left" aria-hidden />
-          <div className="player-card__stadium-light player-card__stadium-light--right" aria-hidden />
+          <div
+            className="player-card__stadium-light player-card__stadium-light--left"
+            aria-hidden
+          />
+          <div
+            className="player-card__stadium-light player-card__stadium-light--right"
+            aria-hidden
+          />
 
           {slotLabel && (
             <span
@@ -111,10 +128,14 @@ export function PlayerCard({
           <div
             className={[
               'player-card__hero',
-              isReveal ? 'player-card__hero--reveal' : 'player-card__hero--draft',
+              isReveal
+                ? 'player-card__hero--reveal'
+                : 'player-card__hero--draft',
               !showStats && 'player-card__hero--hard',
               !showStats && isReveal && 'player-card__hero--reveal',
-            ].filter(Boolean).join(' ')}
+            ]
+              .filter(Boolean)
+              .join(' ')}
           >
             <span
               className="player-card__pos-badge"
@@ -125,7 +146,9 @@ export function PlayerCard({
 
             <div className="player-card__identity">
               <p className="player-card__firstname">{firstName}</p>
-              <p className={`card-surname ${isReveal ? 'card-surname--reveal' : 'card-surname--draft'}`}>
+              <p
+                className={`card-surname ${isReveal ? 'card-surname--reveal' : 'card-surname--draft'}`}
+              >
                 {lastName || firstName}
               </p>
               <p className="player-card__team-line">
@@ -136,10 +159,21 @@ export function PlayerCard({
 
           {/* Stats (Normal / Reveal) */}
           {showStats ? (
-            <div className={`player-card__stats ${isReveal ? 'player-card__stats--reveal' : ''}`}>
+            <div
+              className={`player-card__stats ${isReveal ? 'player-card__stats--reveal' : ''}`}
+            >
+              <div className="card-value">
+                <span>POSITION-ADJUSTED VALUE</span>
+                <strong>
+                  {card.normalizedValue.toFixed(1)}
+                  <small> / 95</small>
+                </strong>
+              </div>
               <div className="player-card__stat-hero">
                 <div>
-                  <p className="player-card__stat-primary-label">Fantasy Points</p>
+                  <p className="player-card__stat-primary-label">
+                    Fantasy Points
+                  </p>
                   <p
                     className={`player-card__stat-primary-value ${isReveal ? 'player-card__stat-primary-value--reveal' : ''}`}
                     style={{ color: posColor }}
@@ -159,9 +193,16 @@ export function PlayerCard({
               </div>
 
               {headlineStats.map((stat) => (
-                <div key={stat.label + stat.value} className="player-card__stat-row">
-                  <span className="player-card__stat-row-label">{stat.label}</span>
-                  <span className="player-card__stat-row-value">{stat.value}</span>
+                <div
+                  key={stat.label + stat.value}
+                  className="player-card__stat-row"
+                >
+                  <span className="player-card__stat-row-label">
+                    {stat.label}
+                  </span>
+                  <span className="player-card__stat-row-value">
+                    {stat.value}
+                  </span>
                 </div>
               ))}
 
@@ -186,6 +227,12 @@ export function PlayerCard({
               <span className="player-card__chip player-card__chip--neutral">
                 {getStatusLabel(card.status)}
               </span>
+            </div>
+          )}
+          {onSelect && (
+            <div className="card-draft-action">
+              {selected ? '✓ PICK LOCKED' : 'DRAFT PLAYER'}
+              <span aria-hidden>↗</span>
             </div>
           )}
         </div>

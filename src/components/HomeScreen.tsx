@@ -1,3 +1,6 @@
+import { PLAYER_CARDS } from '../data/playerCards';
+import { MISSIONS } from '../lib/missions';
+import { PlayerCard } from './PlayerCard';
 import { useState } from 'react';
 import type { GameMode } from '../types';
 import type { ProgressionData } from '../lib/progression';
@@ -31,50 +34,139 @@ export function HomeScreen({
     setShowResetConfirm(false);
   };
 
+  const collected = PLAYER_CARDS.filter(
+    (card) => (progression.cardDraftCounts[card.id] ?? 0) > 0,
+  ).length;
+  const showcase = [
+    'ladainian-tomlinson-2006',
+    'randy-moss-2007',
+    'patrick-mahomes-2018',
+  ]
+    .map((id) => PLAYER_CARDS.find((card) => card.id === id))
+    .filter((card) => card !== undefined);
+
   return (
     <div className="home-screen bg-field-pattern">
       <div className="home-screen__container">
-        <ThemeSelectorTrigger variant="icon" className="home-screen__appearance" />
+        <ThemeSelectorTrigger
+          variant="icon"
+          className="home-screen__appearance"
+        />
 
-        <header className="home-hero">
-          <span className="home-hero__eyebrow">Fantasy Football</span>
-          <h1 className="home-hero__title landing-title-glow">Draft Cards</h1>
-          <p className="home-hero__tagline">
-            Build your ultimate fantasy roster across themed draft rounds.
-            Pick wisely. Draft again.
-          </p>
-        </header>
+        <div className="home-masthead">
+          <span className="brand-mark">DC /</span>
+          <span>THE ALL-TIME DRAFT ROOM</span>
+          <span className="live-label">● ON THE CLOCK</span>
+        </div>
+        <div className="home-feature">
+          <div className="home-feature__copy">
+            <header className="home-hero">
+              <span className="home-hero__eyebrow">
+                Real seasons. Unreal teams.
+              </span>
+              <h1 className="home-hero__title">
+                Draft
+                <br />
+                <em>Greatness.</em>
+              </h1>
+              <p className="home-hero__tagline">
+                What if every NFL season was on the same draft board? Eight
+                picks. One MVP. Your all-time team.
+              </p>
+            </header>
 
-        <section className="home-play" aria-label="Start a draft">
-          <div className="home-play__row">
-            <div className="home-play__mode">
-              <div className="mode-toggle">
+            <section className="home-play" aria-label="Start a draft">
+              <div className="home-play__row">
+                <div className="home-play__mode">
+                  <div className="mode-toggle">
+                    <button
+                      type="button"
+                      className={`mode-toggle-btn ${gameMode === 'normal' ? 'mode-toggle-btn--active' : ''}`}
+                      aria-pressed={gameMode === 'normal'}
+                      onClick={() => onGameModeChange('normal')}
+                    >
+                      Normal
+                    </button>
+                    <button
+                      type="button"
+                      className={`mode-toggle-btn ${gameMode === 'hard' ? 'mode-toggle-btn--active' : ''}`}
+                      aria-pressed={gameMode === 'hard'}
+                      onClick={() => onGameModeChange('hard')}
+                    >
+                      Hard
+                    </button>
+                  </div>
+                  <p className="home-play__hard-hint">
+                    {gameMode === 'hard'
+                      ? 'Trust your ball knowledge. Stats revealed at the finish.'
+                      : 'All stats visible. Find the season, not just the superstar.'}
+                  </p>
+                </div>
                 <button
                   type="button"
-                  className={`mode-toggle-btn ${gameMode === 'normal' ? 'mode-toggle-btn--active' : ''}`}
-                  onClick={() => onGameModeChange('normal')}
+                  onClick={onStartDraft}
+                  className="btn-primary-gold home-play__start"
                 >
-                  Normal
-                </button>
-                <button
-                  type="button"
-                  className={`mode-toggle-btn ${gameMode === 'hard' ? 'mode-toggle-btn--active' : ''}`}
-                  onClick={() => onGameModeChange('hard')}
-                >
-                  Hard
+                  Start Draft <span aria-hidden>↗</span>
                 </button>
               </div>
-              {gameMode === 'hard' && (
-                <p className="home-play__hard-hint">Stats hidden during draft — test your ball knowledge</p>
-              )}
+            </section>
+
+            <div className="home-rules">
+              <span>
+                <b>01</b> Pick from three cards
+              </span>
+              <span>
+                <b>02</b> Build all eight slots
+              </span>
+              <span>
+                <b>03</b> Crown your MVP
+              </span>
             </div>
-            <button type="button" onClick={onStartDraft} className="btn-primary-gold home-play__start">
-              Start Draft
-            </button>
+          </div>
+          <div
+            className="home-showcase"
+            aria-label="Featured historical season cards"
+          >
+            <div className="home-showcase__label">
+              THE ARCHIVE <span>{PLAYER_CARDS.length} SEASONS TO DISCOVER</span>
+            </div>
+            <div className="home-showcase__cards">
+              {showcase.map((card) => (
+                <PlayerCard key={card.id} card={card} variant="reveal" />
+              ))}
+            </div>
+            <p>Different eras. Same field.</p>
+          </div>
+        </div>
+        <section className="home-missions" aria-label="Mission collection">
+          <div className="section-kicker">
+            Build something worth remembering{' '}
+            <span>Optional missions · earned on completed drafts</span>
+          </div>
+          <div className="mission-grid">
+            {MISSIONS.map((mission) => (
+              <div
+                className={`mission ${(progression.missionWins?.[mission.id] ?? 0) > 0 ? 'mission--complete' : ''}`}
+                key={mission.id}
+              >
+                <div className="mission__top">
+                  <strong>{mission.title}</strong>
+                  <span>
+                    {(progression.missionWins?.[mission.id] ?? 0) > 0
+                      ? `✓ ×${progression.missionWins?.[mission.id]}`
+                      : mission.symbol}
+                  </span>
+                </div>
+                <p>{mission.description}</p>
+              </div>
+            ))}
           </div>
         </section>
-
-        <section className="home-dashboard" aria-label="Progression and destinations">
+        <section
+          className="home-dashboard"
+          aria-label="Progression and destinations"
+        >
           <div className="home-dashboard__records">
             <PersonalRecords
               progression={progression}
@@ -83,9 +175,19 @@ export function HomeScreen({
             />
           </div>
           <div className="home-dashboard__destinations">
-            <button type="button" className="home-destination-card" onClick={onOpenHistory}>
+            <button
+              type="button"
+              className="home-destination-card"
+              onClick={onOpenHistory}
+            >
               <span className="home-destination-card__icon" aria-hidden>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
                     d="M3 4.5h12M3 9h8M3 13.5h10"
                     stroke="currentColor"
@@ -96,14 +198,30 @@ export function HomeScreen({
                 </svg>
               </span>
               <span className="home-destination-card__text">
-                <span className="home-destination-card__title">Draft History</span>
-                <span className="home-destination-card__label">Review your past drafts</span>
+                <span className="home-destination-card__title">
+                  Draft History
+                </span>
+                <span className="home-destination-card__label">
+                  Review your past drafts
+                </span>
               </span>
-              <span className="home-destination-card__arrow" aria-hidden>→</span>
+              <span className="home-destination-card__arrow" aria-hidden>
+                →
+              </span>
             </button>
-            <button type="button" className="home-destination-card" onClick={onOpenVault}>
+            <button
+              type="button"
+              className="home-destination-card"
+              onClick={onOpenVault}
+            >
               <span className="home-destination-card__icon" aria-hidden>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <rect
                     x="2.5"
                     y="4"
@@ -124,18 +242,26 @@ export function HomeScreen({
               </span>
               <span className="home-destination-card__text">
                 <span className="home-destination-card__title">Card Vault</span>
-                <span className="home-destination-card__label">Browse your collection</span>
+                <span className="home-destination-card__label">
+                  {collected} / {PLAYER_CARDS.length} seasons collected
+                </span>
               </span>
-              <span className="home-destination-card__arrow" aria-hidden>→</span>
+              <span className="home-destination-card__arrow" aria-hidden>
+                →
+              </span>
             </button>
           </div>
         </section>
 
         <footer className="home-footer">
           <span>8 Picks</span>
-          <span className="home-footer__dot" aria-hidden>·</span>
-          <span>Themed Rounds</span>
-          <span className="home-footer__dot" aria-hidden>·</span>
+          <span className="home-footer__dot" aria-hidden>
+            ·
+          </span>
+          <span>One Redraw</span>
+          <span className="home-footer__dot" aria-hidden>
+            ·
+          </span>
           <span>Full PPR</span>
         </footer>
       </div>

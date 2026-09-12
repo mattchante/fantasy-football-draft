@@ -18,6 +18,13 @@ import {
 import { filterSafeCards, getPositionUrgency } from './rosterValidation';
 
 const CARDS_PER_ROUND = 3;
+const OPEN_BOARD: RoundTheme = {
+  id: 'open-board',
+  title: 'Open Board',
+  description:
+    'The board adapts to your remaining slots. Find the missing piece.',
+  categoryIds: [],
+};
 
 function shuffle<T>(array: T[]): T[] {
   const result = [...array];
@@ -33,7 +40,9 @@ function sampleCards(cards: PlayerCard[], count: number): PlayerCard[] {
 }
 
 function getAvailableThemes(usedThemeIds: string[]): RoundTheme[] {
-  const unused = NORMAL_ROUND_THEMES.filter((t) => !usedThemeIds.includes(t.id));
+  const unused = NORMAL_ROUND_THEMES.filter(
+    (t) => !usedThemeIds.includes(t.id),
+  );
   return unused.length > 0 ? unused : NORMAL_ROUND_THEMES;
 }
 
@@ -150,7 +159,9 @@ function buildMvpRound(
   const candidates = fresh.length >= CARDS_PER_ROUND ? fresh : safe;
 
   if (candidates.length < CARDS_PER_ROUND) {
-    const fallback = pool.filter((c) => isCardDraftable(c, draftedCardIds, draftedPlayerIds));
+    const fallback = pool.filter((c) =>
+      isCardDraftable(c, draftedCardIds, draftedPlayerIds),
+    );
     if (fallback.length < CARDS_PER_ROUND) return null;
     return {
       theme: MVP_ROUND_THEME,
@@ -188,14 +199,16 @@ function buildNormalRound(
 
   if (!theme) {
     const allSafe = filterSafeCards(
-      PLAYER_CARDS.filter((c) => isCardDraftable(c, draftedCardIds, draftedPlayerIds)),
+      PLAYER_CARDS.filter((c) =>
+        isCardDraftable(c, draftedCardIds, draftedPlayerIds),
+      ),
       roster,
       needs.normalPicksRemaining,
     );
     if (allSafe.length < CARDS_PER_ROUND) return null;
 
     return {
-      theme: NORMAL_ROUND_THEMES[0],
+      theme: OPEN_BOARD,
       cards: sampleCards(allSafe, CARDS_PER_ROUND),
       roundNumber,
       isMvpRound: false,
@@ -213,7 +226,9 @@ function buildNormalRound(
 
   if (candidates.length < CARDS_PER_ROUND) {
     const allSafe = filterSafeCards(
-      PLAYER_CARDS.filter((c) => isCardDraftable(c, draftedCardIds, draftedPlayerIds)),
+      PLAYER_CARDS.filter((c) =>
+        isCardDraftable(c, draftedCardIds, draftedPlayerIds),
+      ),
       roster,
       needs.normalPicksRemaining,
     );
@@ -243,6 +258,7 @@ export function createInitialDraftState(): DraftState {
     usedThemeIds: [],
     currentRound: null,
     isComplete: false,
+    redrawsRemaining: 1,
   };
 }
 
@@ -313,7 +329,11 @@ export function applyPick(
   if (!card) throw new Error(`Card ${cardId} not in current round`);
 
   const isMvpPick = state.currentRound?.isMvpRound ?? false;
-  const { roster: newRoster, slot } = assignPlayerToRoster(roster, card, isMvpPick);
+  const { roster: newRoster, slot } = assignPlayerToRoster(
+    roster,
+    card,
+    isMvpPick,
+  );
 
   const draftedCardIds = new Set(state.draftedCardIds);
   draftedCardIds.add(cardId);
@@ -321,9 +341,10 @@ export function applyPick(
   const draftedPlayerIds = new Set(state.draftedPlayerIds);
   draftedPlayerIds.add(card.playerId);
 
-  const usedThemeIds = state.currentRound && !isMvpPick
-    ? [...state.usedThemeIds, state.currentRound.theme.id]
-    : state.usedThemeIds;
+  const usedThemeIds =
+    state.currentRound && !isMvpPick
+      ? [...state.usedThemeIds, state.currentRound.theme.id]
+      : state.usedThemeIds;
 
   const picks = [
     ...state.picks,
@@ -339,6 +360,7 @@ export function applyPick(
     usedThemeIds,
     currentRound: null,
     isComplete: isRosterComplete(newRoster),
+    redrawsRemaining: state.redrawsRemaining,
   };
 
   if (newState.isComplete) {
@@ -367,3 +389,39 @@ export function applyPick(
 }
 
 export { NORMAL_PICKS, CARDS_PER_ROUND };
+
+/** Trade the entire board once. No repeats from the discarded board, even in a thin pool. */
+export function redrawRound(
+  state: DraftState,
+  roster: RosterState,
+): DraftState {
+  if (
+    state.isComplete ||
+    !state.currentRound ||
+    state.currentRound.isMvpRound ||
+    state.redrawsRemaining < 1
+  )
+    return state;
+  const excluded = new Set([
+    ...state.draftedCardIds,
+    ...state.currentRound.cards.map((card) => card.id),
+  ]);
+  const round = buildNormalRound(
+    roster,
+    excluded,
+    state.draftedPlayerIds,
+    state.offeredCardIds,
+    [...state.usedThemeIds, state.currentRound.theme.id],
+    state.roundNumber,
+  );
+  if (!round) return state;
+  return {
+    ...state,
+    currentRound: round,
+    redrawsRemaining: state.redrawsRemaining - 1,
+    offeredCardIds: new Set([
+      ...state.offeredCardIds,
+      ...round.cards.map((card) => card.id),
+    ]),
+  };
+}

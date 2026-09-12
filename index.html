@@ -15,7 +15,8 @@
       (function () {
         var key = 'draft-cards-theme-v1';
         var valid = ['gridiron', 'monochrome', 'ice', 'crimson', 'royal'];
-        var theme = localStorage.getItem(key);
+        var theme;
+        try { theme = localStorage.getItem(key); } catch (_) {}
         if (valid.indexOf(theme) === -1) theme = 'gridiron';
         document.documentElement.setAttribute('data-theme', theme);
       })();

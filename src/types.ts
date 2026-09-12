@@ -75,6 +75,7 @@ export interface DraftState {
   usedThemeIds: string[];
   currentRound: GeneratedRound | null;
   isComplete: boolean;
+  redrawsRemaining: number;
 }
 
 export type RosterState = Record<RosterSlot, PlayerCard | null>;

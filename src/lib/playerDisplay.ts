@@ -37,6 +37,7 @@ const TEAM_NAMES: Record<string, string> = {
   TB: 'BUCCANEERS',
   TEN: 'TITANS',
   WAS: 'COMMANDERS',
+  OAK: 'RAIDERS',
   SD: 'CHARGERS',
   STL: 'RAMS',
 };

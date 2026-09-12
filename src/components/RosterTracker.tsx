@@ -23,9 +23,13 @@ function RosterSlotDisplay({ slot, name }: RosterSlotDisplayProps) {
       </span>
       <span className="roster-slot__divider" />
       {filled ? (
-        <span className="text-sm text-theme-primary truncate flex-1 px-2">{name}</span>
+        <span className="text-sm text-theme-primary truncate flex-1 px-2">
+          {name}
+        </span>
       ) : (
-        <span className="text-xs text-theme-faint italic flex-1 px-2">Empty</span>
+        <span className="text-xs text-theme-faint italic flex-1 px-2">
+          Empty
+        </span>
       )}
       {filled && (
         <span
@@ -43,7 +47,7 @@ interface RosterTrackerProps {
 
 export function RosterTracker({ roster }: RosterTrackerProps) {
   return (
-    <div className="w-full lg:w-60 shrink-0">
+    <div className="roster-tracker w-full shrink-0">
       <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-theme-muted mb-3">
         Your Roster
       </h4>
@@ -52,7 +56,11 @@ export function RosterTracker({ roster }: RosterTrackerProps) {
           <RosterSlotDisplay
             key={slot}
             slot={slot}
-            name={roster[slot]?.name ?? null}
+            name={
+              roster[slot]
+                ? `${roster[slot]!.name} · ${roster[slot]!.season}`
+                : null
+            }
           />
         ))}
       </div>
