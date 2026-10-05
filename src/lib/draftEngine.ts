@@ -158,22 +158,14 @@ function buildMvpRound(
   const fresh = safe.filter((c) => !offeredCardIds.has(c.id));
   const candidates = fresh.length >= CARDS_PER_ROUND ? fresh : safe;
 
-  if (candidates.length < CARDS_PER_ROUND) {
-    const fallback = pool.filter((c) =>
-      isCardDraftable(c, draftedCardIds, draftedPlayerIds),
-    );
-    if (fallback.length < CARDS_PER_ROUND) return null;
-    return {
-      theme: MVP_ROUND_THEME,
-      cards: sampleCards(fallback, CARDS_PER_ROUND),
-      roundNumber,
-      isMvpRound: true,
-    };
-  }
+  // Thin pool: fall back to unsafe-but-legal cards rather than failing the draft.
+  const cards =
+    candidates.length >= CARDS_PER_ROUND ? candidates : pool;
+  if (cards.length < CARDS_PER_ROUND) return null;
 
   return {
     theme: MVP_ROUND_THEME,
-    cards: sampleCards(candidates, CARDS_PER_ROUND),
+    cards: sampleCards(cards, CARDS_PER_ROUND),
     roundNumber,
     isMvpRound: true,
   };

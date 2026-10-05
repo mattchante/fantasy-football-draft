@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import type {
   CompletionFeedback,
   DraftState,
@@ -19,9 +19,21 @@ import { createEmptyRoster } from './lib/roster';
 import { getTeamRatingResult } from './lib/teamRating';
 import { HomeScreen } from './components/HomeScreen';
 import { DraftScreen } from './components/DraftScreen';
-import { TeamReveal } from './components/TeamReveal';
-import { DraftHistoryScreen } from './components/DraftHistoryScreen';
-import { CardVaultScreen } from './components/CardVaultScreen';
+
+// Secondary screens load on demand so the first paint ships only home + draft.
+const TeamReveal = lazy(() =>
+  import('./components/TeamReveal').then((m) => ({ default: m.TeamReveal })),
+);
+const DraftHistoryScreen = lazy(() =>
+  import('./components/DraftHistoryScreen').then((m) => ({
+    default: m.DraftHistoryScreen,
+  })),
+);
+const CardVaultScreen = lazy(() =>
+  import('./components/CardVaultScreen').then((m) => ({
+    default: m.CardVaultScreen,
+  })),
+);
 
 function App() {
   const [phase, setPhase] = useState<GamePhase>('home');
@@ -95,50 +107,17 @@ function App() {
     [gameMode, progression],
   );
 
-  if (phase === 'home') {
-    return (
-      <HomeScreen
-        gameMode={gameMode}
-        progression={progression}
-        onGameModeChange={setGameMode}
-        onStartDraft={beginFreshDraft}
-        onOpenHistory={() => setPhase('history')}
-        onOpenVault={() => setPhase('vault')}
-        onResetProgression={handleResetProgression}
-      />
-    );
-  }
-
-  if (phase === 'history') {
-    return (
-      <DraftHistoryScreen
-        progression={progression}
-        onBack={() => setPhase('home')}
-      />
-    );
-  }
-
-  if (phase === 'vault') {
-    return (
-      <CardVaultScreen
-        progression={progression}
-        onBack={() => setPhase('home')}
-      />
-    );
-  }
-
-  if (phase === 'reveal') {
-    return (
-      <TeamReveal
-        roster={roster}
-        gameMode={gameMode}
-        completionFeedback={completionFeedback}
-        previousBest={previousBest}
-        onDraftAgain={beginFreshDraft}
-        onMainMenu={resetToHome}
-      />
-    );
-  }
+  const home = (
+    <HomeScreen
+      gameMode={gameMode}
+      progression={progression}
+      onGameModeChange={setGameMode}
+      onStartDraft={beginFreshDraft}
+      onOpenHistory={() => setPhase('history')}
+      onOpenVault={() => setPhase('vault')}
+      onResetProgression={handleResetProgression}
+    />
+  );
 
   if (phase === 'draft' && draftState?.currentRound) {
     return (
@@ -158,17 +137,36 @@ function App() {
     );
   }
 
-  return (
-    <HomeScreen
-      gameMode={gameMode}
-      progression={progression}
-      onGameModeChange={setGameMode}
-      onStartDraft={beginFreshDraft}
-      onOpenHistory={() => setPhase('history')}
-      onOpenVault={() => setPhase('vault')}
-      onResetProgression={handleResetProgression}
-    />
-  );
+  if (phase === 'history' || phase === 'vault' || phase === 'reveal') {
+    return (
+      <Suspense fallback={null}>
+        {phase === 'history' && (
+          <DraftHistoryScreen
+            progression={progression}
+            onBack={() => setPhase('home')}
+          />
+        )}
+        {phase === 'vault' && (
+          <CardVaultScreen
+            progression={progression}
+            onBack={() => setPhase('home')}
+          />
+        )}
+        {phase === 'reveal' && (
+          <TeamReveal
+            roster={roster}
+            gameMode={gameMode}
+            completionFeedback={completionFeedback}
+            previousBest={previousBest}
+            onDraftAgain={beginFreshDraft}
+            onMainMenu={resetToHome}
+          />
+        )}
+      </Suspense>
+    );
+  }
+
+  return home;
 }
 
 export default App;
