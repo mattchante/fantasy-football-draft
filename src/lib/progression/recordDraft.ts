@@ -15,6 +15,7 @@ export interface RecordCompletedDraftInput {
   rating: number;
   tier: RatingTier;
   roster: RosterState;
+  challengeKey?: string;
 }
 
 export interface RecordCompletedDraftResult {
@@ -52,7 +53,7 @@ function computeFeedback(
 export function recordCompletedDraft(
   input: RecordCompletedDraftInput,
 ): RecordCompletedDraftResult {
-  const { progression, mode, rating, tier, roster } = input;
+  const { progression, mode, rating, tier, roster, challengeKey } = input;
   const rosterEntries = buildHistoryRoster(roster);
   const cardIds = rosterEntries.map((entry) => entry.cardId);
 
@@ -80,6 +81,7 @@ export function recordCompletedDraft(
     tierLabel: tier.label,
     tierColor: tier.color,
     roster: rosterEntries,
+    ...(challengeKey ? { challengeKey } : {}),
   };
 
   const updatedBestScores = { ...progression.bestScores };

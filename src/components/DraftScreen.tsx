@@ -21,6 +21,8 @@ interface DraftScreenProps {
   currentRound: GeneratedRound;
   cardDraftCounts: Record<string, number>;
   bestScore?: number;
+  /** Present when this is the Daily Challenge. */
+  daily?: { number: number; par: number };
   onPick: (draftState: DraftState, roster: RosterState) => void;
   onComplete: (draftState: DraftState, roster: RosterState) => void;
   onRestartDraft: () => void;
@@ -34,6 +36,7 @@ export function DraftScreen({
   currentRound,
   cardDraftCounts,
   bestScore,
+  daily,
   onPick,
   onComplete,
   onRestartDraft,
@@ -82,10 +85,19 @@ export function DraftScreen({
   return (
     <div className="draft-screen min-h-screen bg-field-pattern px-4 py-8 md:px-8">
       <div className="max-w-7xl mx-auto relative">
-        <DraftMenu onRestartDraft={onRestartDraft} onMainMenu={onMainMenu} />
+        <DraftMenu
+          onRestartDraft={daily ? undefined : onRestartDraft}
+          onMainMenu={onMainMenu}
+          mainMenuMessage={
+            daily
+              ? 'Your daily picks are saved. Resume from the main menu any time today.'
+              : undefined
+          }
+        />
 
         <div className="draft-brand">
-          <span className="brand-mark">DC /</span> DRAFT ROOM{' '}
+          <span className="brand-mark">DC /</span>{' '}
+          {daily ? `DAILY #${daily.number}` : 'DRAFT ROOM'}{' '}
           <span>
             {gameMode === 'hard'
               ? 'HARD · STATS HIDDEN'
@@ -144,15 +156,23 @@ export function DraftScreen({
           </div>
 
           <aside className="draft-sidebar">
-            <div className="record-target">
-              <span>PERSONAL BEST · {gameMode.toUpperCase()}</span>
-              <strong>{bestScore ?? '—'}</strong>
-              <p>
-                {bestScore
-                  ? 'A new board. A new shot at the record.'
-                  : 'Your first completed draft sets the bar.'}
-              </p>
-            </div>
+            {daily ? (
+              <div className="record-target">
+                <span>TODAY’S PAR · DAILY #{daily.number}</span>
+                <strong>{daily.par}</strong>
+                <p>Beat it to win the day. Same boards for everyone.</p>
+              </div>
+            ) : (
+              <div className="record-target">
+                <span>PERSONAL BEST · {gameMode.toUpperCase()}</span>
+                <strong>{bestScore ?? '—'}</strong>
+                <p>
+                  {bestScore
+                    ? 'A new board. A new shot at the record.'
+                    : 'Your first completed draft sets the bar.'}
+                </p>
+              </div>
+            )}
             <RosterTracker roster={roster} />
           </aside>
         </div>

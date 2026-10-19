@@ -5,11 +5,17 @@ import { useTheme } from '../lib/theme';
 type PendingAction = 'restart' | 'mainMenu' | null;
 
 interface DraftMenuProps {
-  onRestartDraft: () => void;
+  /** Omit to hide restart (the Daily Challenge allows one attempt). */
+  onRestartDraft?: () => void;
   onMainMenu: () => void;
+  mainMenuMessage?: string;
 }
 
-export function DraftMenu({ onRestartDraft, onMainMenu }: DraftMenuProps) {
+export function DraftMenu({
+  onRestartDraft,
+  onMainMenu,
+  mainMenuMessage = 'Your current draft progress will be lost.',
+}: DraftMenuProps) {
   const { openThemeSelector } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
@@ -28,7 +34,7 @@ export function DraftMenu({ onRestartDraft, onMainMenu }: DraftMenuProps) {
 
   const handleConfirm = () => {
     if (pendingAction === 'restart') {
-      onRestartDraft();
+      onRestartDraft?.();
     } else if (pendingAction === 'mainMenu') {
       onMainMenu();
     }
@@ -59,9 +65,11 @@ export function DraftMenu({ onRestartDraft, onMainMenu }: DraftMenuProps) {
               onClick={closeMenu}
             />
             <div className="menu-popover z-20">
-              <button type="button" className="menu-popover-item" onClick={handleRestartClick}>
-                Restart Draft
-              </button>
+              {onRestartDraft && (
+                <button type="button" className="menu-popover-item" onClick={handleRestartClick}>
+                  Restart Draft
+                </button>
+              )}
               <button type="button" className="menu-popover-item" onClick={handleMainMenuClick}>
                 Main Menu
               </button>
@@ -96,7 +104,7 @@ export function DraftMenu({ onRestartDraft, onMainMenu }: DraftMenuProps) {
       {pendingAction === 'mainMenu' && (
         <ConfirmDialog
           title="Return to main menu?"
-          message="Your current draft progress will be lost."
+          message={mainMenuMessage}
           confirmLabel="Main Menu"
           onConfirm={handleConfirm}
           onCancel={handleCancelConfirm}

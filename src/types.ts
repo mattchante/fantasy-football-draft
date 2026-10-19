@@ -67,6 +67,8 @@ export interface DraftedPick {
 }
 
 export interface DraftState {
+  /** Present only for seeded drafts (the Daily Challenge). */
+  seed?: string;
   roundNumber: number;
   picks: DraftedPick[];
   draftedCardIds: Set<string>;

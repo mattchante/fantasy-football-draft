@@ -7,10 +7,16 @@ import type { ProgressionData } from '../lib/progression';
 import { ConfirmDialog } from './ConfirmDialog';
 import { PersonalRecords } from './PersonalRecords';
 import { ThemeSelectorTrigger } from './ThemeSelector';
+import { DailyChallengePanel } from './DailyChallengePanel';
+import type { DailyData } from '../lib/daily';
 
 interface HomeScreenProps {
   gameMode: GameMode;
   progression: ProgressionData;
+  daily: DailyData;
+  today: string;
+  now: Date;
+  onPlayDaily: () => void;
   onGameModeChange: (mode: GameMode) => void;
   onStartDraft: () => void;
   onOpenHistory: () => void;
@@ -21,6 +27,10 @@ interface HomeScreenProps {
 export function HomeScreen({
   gameMode,
   progression,
+  daily,
+  today,
+  now,
+  onPlayDaily,
   onGameModeChange,
   onStartDraft,
   onOpenHistory,
@@ -139,6 +149,12 @@ export function HomeScreen({
             <p>Different eras. Same field.</p>
           </div>
         </div>
+        <DailyChallengePanel
+          daily={daily}
+          today={today}
+          now={now}
+          onPlay={onPlayDaily}
+        />
         <section className="home-missions" aria-label="Mission collection">
           <div className="section-kicker">
             Build something worth remembering{' '}
@@ -269,7 +285,7 @@ export function HomeScreen({
       {showResetConfirm && (
         <ConfirmDialog
           title="Reset progression?"
-          message="Reset all progression? This cannot be undone."
+          message="Reset all progression, including your daily streak? This cannot be undone."
           confirmLabel="Reset"
           onConfirm={handleConfirmReset}
           onCancel={() => setShowResetConfirm(false)}

@@ -6,12 +6,16 @@ import { getTeamRatingResult } from '../lib/teamRating';
 import { TeamRating } from './TeamRating';
 import { FinalRosterGrid } from './FinalRosterGrid';
 import { ProgressionFeedback } from './ProgressionFeedback';
+import { DailyResultCard } from './DailyResultCard';
+import type { DailyResult } from '../lib/daily';
 
 interface TeamRevealProps {
   roster: RosterState;
   gameMode: GameMode;
   completionFeedback: CompletionFeedback | null;
   previousBest?: number;
+  /** Present when this draft was the Daily Challenge. */
+  dailyResult?: DailyResult | null;
   onDraftAgain: () => void;
   onMainMenu: () => void;
 }
@@ -21,6 +25,7 @@ export function TeamReveal({
   gameMode,
   completionFeedback,
   previousBest,
+  dailyResult,
   onDraftAgain,
   onMainMenu,
 }: TeamRevealProps) {
@@ -51,17 +56,27 @@ export function TeamReveal({
           <TeamRating rating={rating} tier={tier} />
           <div className="result-story">
             <span className="section-kicker">
-              FINAL WHISTLE / {gameMode.toUpperCase()}
+              {dailyResult
+                ? `DAILY #${dailyResult.number} / ${dailyResult.won ? 'WON' : 'MISSED PAR'}`
+                : `FINAL WHISTLE / ${gameMode.toUpperCase()}`}
             </span>
             <h2>
-              {completionFeedback?.isPersonalBest
+              {dailyResult
+                ? dailyResult.won
+                  ? 'Par beaten. The day is yours.'
+                  : 'The par held today.'
+                : completionFeedback?.isPersonalBest
                 ? 'A new standard.'
                 : rating >= 175
                   ? 'Built to dominate.'
                   : 'Your next great team starts here.'}
             </h2>
             <p>
-              {previousBest === undefined
+              {dailyResult
+                ? dailyResult.won
+                  ? `${dailyResult.rating - dailyResult.par} points over par ${dailyResult.par}. Streak: ${dailyResult.streak} day${dailyResult.streak === 1 ? '' : 's'}.`
+                  : `Par was ${dailyResult.par}. A new board arrives at midnight.`
+                : previousBest === undefined
                 ? 'Your first score is on the board. Now give yourself something to chase.'
                 : rating > previousBest
                   ? `${rating - previousBest} points above your previous best of ${previousBest}.`
@@ -87,13 +102,18 @@ export function TeamReveal({
           </div>
         </div>
         <ProgressionFeedback feedback={completionFeedback} />
+        {dailyResult && (
+          <div className="result-daily">
+            <DailyResultCard result={dailyResult} />
+          </div>
+        )}
         <div className="result-actions">
           <button
             type="button"
             onClick={onDraftAgain}
-            className="btn-primary-gold"
+            className={dailyResult ? 'btn-secondary' : 'btn-primary-gold'}
           >
-            Run it back ↗
+            {dailyResult ? 'Free draft ↗' : 'Run it back ↗'}
           </button>
           <button type="button" onClick={onMainMenu} className="btn-secondary">
             Main Menu
@@ -140,7 +160,7 @@ export function TeamReveal({
             onClick={onDraftAgain}
             className="btn-primary-gold"
           >
-            Draft Again
+            {dailyResult ? 'Free Draft' : 'Draft Again'}
           </button>
           <button
             type="button"

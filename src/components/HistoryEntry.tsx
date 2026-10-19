@@ -1,6 +1,7 @@
 import { MISSIONS } from '../lib/missions';
 import type { CompletedDraftSnapshot } from '../lib/progression';
 import { ROSTER_SLOTS } from '../lib/roster';
+import { getChallengeNumber } from '../lib/daily';
 
 interface HistoryEntryProps {
   entry: CompletedDraftSnapshot;
@@ -35,7 +36,11 @@ export function HistoryEntry({ entry }: HistoryEntryProps) {
         </div>
         <div className="history-entry__meta">
           <span className="history-entry__mode">
-            {entry.mode === 'hard' ? 'Hard' : 'Normal'}
+            {entry.challengeKey
+              ? `Daily #${getChallengeNumber(entry.challengeKey)}`
+              : entry.mode === 'hard'
+                ? 'Hard'
+                : 'Normal'}
           </span>
           <span className="history-entry__date">
             {formatDate(entry.completedAt)}

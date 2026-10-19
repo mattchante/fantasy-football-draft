@@ -18,6 +18,8 @@ export interface CompletedDraftSnapshot {
   tierColor: string;
   roster: HistoryRosterEntry[];
   missionIds?: string[];
+  /** Daily Challenge date key (YYYY-MM-DD) when this was a daily draft. */
+  challengeKey?: string;
 }
 
 export interface ProgressionData {

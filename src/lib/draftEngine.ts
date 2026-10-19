@@ -16,6 +16,7 @@ import {
   NORMAL_PICKS,
 } from './roster';
 import { filterSafeCards, getPositionUrgency } from './rosterValidation';
+import { createSeededRng, defaultRng, type Rng } from './random';
 
 const CARDS_PER_ROUND = 3;
 const OPEN_BOARD: RoundTheme = {
@@ -26,17 +27,21 @@ const OPEN_BOARD: RoundTheme = {
   categoryIds: [],
 };
 
-function shuffle<T>(array: T[]): T[] {
+function shuffle<T>(array: T[], rng: Rng): T[] {
   const result = [...array];
   for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rng() * (i + 1));
     [result[i], result[j]] = [result[j], result[i]];
   }
   return result;
 }
 
-function sampleCards(cards: PlayerCard[], count: number): PlayerCard[] {
-  return shuffle(cards).slice(0, Math.min(count, cards.length));
+function sampleCards(
+  cards: PlayerCard[],
+  count: number,
+  rng: Rng,
+): PlayerCard[] {
+  return shuffle(cards, rng).slice(0, Math.min(count, cards.length));
 }
 
 function getAvailableThemes(usedThemeIds: string[]): RoundTheme[] {
@@ -84,6 +89,7 @@ function scoreTheme(
   offeredCardIds: Set<string>,
   picksRemaining: number,
   usedThemeIds: string[],
+  rng: Rng,
 ): number {
   const candidates = getThemeCandidates(
     theme,
@@ -96,7 +102,7 @@ function scoreTheme(
 
   if (candidates.length < CARDS_PER_ROUND) return -1;
 
-  let score = Math.random() * 10;
+  let score = rng() * 10;
 
   if (!usedThemeIds.includes(theme.id)) score += 20;
 
@@ -118,6 +124,7 @@ function selectTheme(
   offeredCardIds: Set<string>,
   usedThemeIds: string[],
   picksRemaining: number,
+  rng: Rng,
 ): RoundTheme | null {
   const themes = getAvailableThemes(usedThemeIds);
   const scored = themes
@@ -131,6 +138,7 @@ function selectTheme(
         offeredCardIds,
         picksRemaining,
         usedThemeIds,
+        rng,
       ),
     }))
     .filter((t) => t.score >= 0)
@@ -140,7 +148,7 @@ function selectTheme(
 
   const topScore = scored[0].score;
   const topThemes = scored.filter((t) => t.score >= topScore - 5);
-  return topThemes[Math.floor(Math.random() * topThemes.length)].theme;
+  return topThemes[Math.floor(rng() * topThemes.length)].theme;
 }
 
 function buildMvpRound(
@@ -149,6 +157,7 @@ function buildMvpRound(
   draftedPlayerIds: Set<string>,
   offeredCardIds: Set<string>,
   roundNumber: number,
+  rng: Rng,
 ): GeneratedRound | null {
   const pool = getMvpEligibleCards().filter((c) =>
     isCardDraftable(c, draftedCardIds, draftedPlayerIds),
@@ -165,7 +174,7 @@ function buildMvpRound(
     if (fallback.length < CARDS_PER_ROUND) return null;
     return {
       theme: MVP_ROUND_THEME,
-      cards: sampleCards(fallback, CARDS_PER_ROUND),
+      cards: sampleCards(fallback, CARDS_PER_ROUND, rng),
       roundNumber,
       isMvpRound: true,
     };
@@ -173,7 +182,7 @@ function buildMvpRound(
 
   return {
     theme: MVP_ROUND_THEME,
-    cards: sampleCards(candidates, CARDS_PER_ROUND),
+    cards: sampleCards(candidates, CARDS_PER_ROUND, rng),
     roundNumber,
     isMvpRound: true,
   };
@@ -186,6 +195,7 @@ function buildNormalRound(
   offeredCardIds: Set<string>,
   usedThemeIds: string[],
   roundNumber: number,
+  rng: Rng,
 ): GeneratedRound | null {
   const needs = getRemainingNeeds(roster);
   const theme = selectTheme(
@@ -195,6 +205,7 @@ function buildNormalRound(
     offeredCardIds,
     usedThemeIds,
     needs.normalPicksRemaining,
+    rng,
   );
 
   if (!theme) {
@@ -209,7 +220,7 @@ function buildNormalRound(
 
     return {
       theme: OPEN_BOARD,
-      cards: sampleCards(allSafe, CARDS_PER_ROUND),
+      cards: sampleCards(allSafe, CARDS_PER_ROUND, rng),
       roundNumber,
       isMvpRound: false,
     };
@@ -242,14 +253,30 @@ function buildNormalRound(
 
   return {
     theme,
-    cards: sampleCards(candidates, CARDS_PER_ROUND),
+    cards: sampleCards(candidates, CARDS_PER_ROUND, rng),
     roundNumber,
     isMvpRound: false,
   };
 }
 
-export function createInitialDraftState(): DraftState {
+/**
+ * Seeded drafts derive a fresh generator per board from the seed, the pick
+ * number and the board kind. Every player sees the same opening board, and
+ * identical picks always reproduce identical later boards.
+ */
+function getBoardRng(
+  state: DraftState,
+  roundNumber: number,
+  kind: 'board' | 'redraw',
+): Rng {
+  return state.seed
+    ? createSeededRng(`${state.seed}:${kind}:${roundNumber}`)
+    : defaultRng;
+}
+
+export function createInitialDraftState(seed?: string): DraftState {
   return {
+    ...(seed ? { seed } : {}),
     roundNumber: 1,
     picks: [],
     draftedCardIds: new Set(),
@@ -277,6 +304,7 @@ export function generateNextRound(
       state.draftedPlayerIds,
       state.offeredCardIds,
       roundNumber,
+      getBoardRng(state, roundNumber, 'board'),
     );
   }
 
@@ -287,15 +315,16 @@ export function generateNextRound(
     state.offeredCardIds,
     state.usedThemeIds,
     roundNumber,
+    getBoardRng(state, roundNumber, 'board'),
   );
 }
 
-export function startDraft(): {
+export function startDraft(options: { seed?: string } = {}): {
   draftState: DraftState;
   roster: RosterState;
   currentRound: GeneratedRound;
 } {
-  const draftState = createInitialDraftState();
+  const draftState = createInitialDraftState(options.seed);
   const roster = createEmptyRoster();
   const currentRound = generateNextRound(draftState, roster);
 
@@ -352,6 +381,7 @@ export function applyPick(
   ];
 
   const newState: DraftState = {
+    ...(state.seed ? { seed: state.seed } : {}),
     roundNumber: state.roundNumber + 1,
     picks,
     draftedCardIds,
@@ -413,6 +443,7 @@ export function redrawRound(
     state.offeredCardIds,
     [...state.usedThemeIds, state.currentRound.theme.id],
     state.roundNumber,
+    getBoardRng(state, state.roundNumber, 'redraw'),
   );
   if (!round) return state;
   return {

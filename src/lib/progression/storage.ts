@@ -93,6 +93,9 @@ function sanitizeHistory(value: unknown): ProgressionData['history'] {
       missionIds: Array.isArray(item.missionIds)
         ? item.missionIds.filter((id): id is string => typeof id === 'string')
         : [],
+      ...(typeof item.challengeKey === 'string'
+        ? { challengeKey: item.challengeKey }
+        : {}),
     });
   }
 
