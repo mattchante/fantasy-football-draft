@@ -12,6 +12,8 @@ import {
 import { ACHIEVEMENTS, getCollectionBook } from '../src/lib/achievements';
 import { formatShareText, getDraftGrade } from '../src/lib/draftGrade';
 import { getDraftGradeTier } from '../src/data/draftGrades';
+import { getHeadshotSrc } from '../src/lib/playerDisplay';
+import { PLAYER_CARDS } from '../src/data/playerCards';
 import {
   createEmptyProgression,
   loadProgression,
@@ -178,6 +180,18 @@ for (let run = 0; run < 1000; run++) {
     }
   }
 }
+assert.equal(
+  getHeadshotSrc('https://static.www.nfl.com/image/private/f_auto,q_auto/league/abc'),
+  'https://static.www.nfl.com/image/private/f_auto,q_auto,w_480/league/abc',
+);
+assert.equal(
+  getHeadshotSrc('https://a.espncdn.com/i/headshots/nfl/players/full/10147.png'),
+  'https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/10147.png&w=480&h=349',
+);
+assert.ok(
+  PLAYER_CARDS.filter((card) => card.imageUrl).length >= 330,
+  'Nearly every card links a real headshot',
+);
 assert.equal(writes, 0);
 assert.equal(progression.totalDrafts, 1000);
 assert.equal(progression.history.length, 25);

@@ -47,6 +47,12 @@ Accuracy maps to grades from F to A+ (`src/data/draftGrades.ts`). The thresholds
 
 **Team strength** is the uncapped sum of the eight card values, MVP ×1.1, with tier labels from Disaster to Broken. The results PPR total is the sum of individual historical season totals, not a simulated shared season. The dataset is static, not a live NFL feed.
 
+## Player photos
+
+Cards show a headshot of the player behind their name: 226 of 234 players, linked from NFL.com's image CDN or, where NFL only has a placeholder, ESPN's. Images are hotlinked at card size and are not stored in this repo; they belong to their owners, and the game is a personal, non-commercial project. A player keeps one photo across all of their cards, so the uniform may not match the card's season. Players with no real photo, and any image that fails to load, show the jersey-number art instead.
+
+`python3 scripts/enrich_headshots.py` rebuilds the links from the cached nflverse rosters, checks every NFL photo against NFL's placeholder helmet, and writes `scripts/headshot-enrichment-report.json`.
+
 ## Collection and persistence
 
 Completed drafts, separate Normal/Hard best grades, collection counts, and achievement unlocks with lifetime counts are saved in browser local storage. The latest 25 rosters are retained; lifetime totals and achievement counts continue beyond that limit. Stamps from the retired side missions stay in saved data but are no longer shown. Existing version-1 saves and card-ID migrations remain compatible. Vault search supports player, team abbreviation/name, and year, combined with position and collected/missing filters.

@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import type {
   CardInfoLevel,
   PlayerCard as PlayerCardType,
@@ -7,6 +7,7 @@ import type {
 import { POSITION_COLORS, getStatusLabel } from '../lib/positionColors';
 import {
   formatSeason,
+  getHeadshotSrc,
   getTeamDisplayName,
   parseHeadlineStat,
   parsePlayerName,
@@ -46,6 +47,9 @@ export function PlayerCard({
   const isUndrafted = isVault && vaultState === 'undrafted';
   const isInteractive = Boolean(onSelect) && !disabled && !isVault;
   const headlineStats = card.headlineStats.slice(0, 2).map(parseHeadlineStat);
+  const [photoFailed, setPhotoFailed] = useState(false);
+  const photoSrc =
+    card.imageUrl && !photoFailed ? getHeadshotSrc(card.imageUrl) : null;
 
   const cardStyle: CSSProperties = {
     '--card-accent': posColor,
@@ -135,10 +139,23 @@ export function PlayerCard({
                 : 'player-card__hero--draft',
               !showStats && 'player-card__hero--hard',
               !showStats && isReveal && 'player-card__hero--reveal',
+              photoSrc && 'player-card__hero--photo',
             ]
               .filter(Boolean)
               .join(' ')}
           >
+            {photoSrc && (
+              <img
+                className="player-card__photo"
+                src={photoSrc}
+                alt=""
+                aria-hidden
+                loading="lazy"
+                decoding="async"
+                referrerPolicy="no-referrer"
+                onError={() => setPhotoFailed(true)}
+              />
+            )}
             <span
               className="player-card__pos-badge"
               style={{ backgroundColor: posColor }}

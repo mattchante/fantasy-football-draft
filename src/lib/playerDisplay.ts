@@ -120,3 +120,19 @@ export function parseHeadlineStat(stat: string): ParsedHeadlineStat {
   }
   return { value: stat, label: '' };
 }
+
+const NFL_IMAGE_TRANSFORM = 'f_auto,q_auto';
+
+const ESPN_HEADSHOT_PREFIX = 'https://a.espncdn.com/i/headshots/';
+
+/** Card-sized headshot: asks each image CDN for a 480px-wide version. */
+export function getHeadshotSrc(imageUrl: string): string {
+  if (imageUrl.includes('static.www.nfl.com')) {
+    return imageUrl.replace(NFL_IMAGE_TRANSFORM, `${NFL_IMAGE_TRANSFORM},w_480`);
+  }
+  if (imageUrl.startsWith(ESPN_HEADSHOT_PREFIX)) {
+    const path = imageUrl.slice('https://a.espncdn.com'.length);
+    return `https://a.espncdn.com/combiner/i?img=${path}&w=480&h=349`;
+  }
+  return imageUrl;
+}

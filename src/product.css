@@ -1101,3 +1101,48 @@ button:disabled {
     font-size: 10px;
   }
 }
+
+/* Player headshots: transparent cutouts behind the name */
+.player-card .player-card__hero--photo {
+  justify-content: flex-end;
+}
+.player-card__photo {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 1;
+  width: 100%;
+  height: 74%;
+  object-fit: cover;
+  object-position: center 6%;
+  pointer-events: none;
+  user-select: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+}
+.player-card__hero--photo.player-card__hero--draft {
+  min-height: 220px;
+}
+.player-card__hero--photo.player-card__hero--reveal,
+.home-showcase__cards .player-card__hero--photo {
+  min-height: 180px;
+}
+.player-card__hero--photo .player-card__identity {
+  margin-top: 0;
+}
+.player-card__hero--photo .card-surname,
+.player-card__hero--photo .player-card__firstname,
+.player-card__hero--photo .player-card__team-line {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.9),
+    0 0 18px rgba(0, 0, 0, 0.75);
+}
+.player-card--undrafted .player-card__photo {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+@media (max-width: 700px) {
+  .choice .player-card__hero--photo.player-card__hero--draft {
+    min-height: 190px;
+    padding-bottom: 12px;
+  }
+}

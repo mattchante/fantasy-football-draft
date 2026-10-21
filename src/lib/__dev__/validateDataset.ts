@@ -77,8 +77,9 @@ export function validateDataset(): void {
       errors++;
     }
 
-    if (!card.imageUrl) {
-      console.error('Missing imageUrl:', card.id);
+    // Empty means no real headshot exists; the card shows jersey-number art.
+    if (card.imageUrl && !card.imageUrl.startsWith('https://')) {
+      console.error('Invalid imageUrl:', card.id, card.imageUrl);
       errors++;
     }
 
