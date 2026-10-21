@@ -649,6 +649,86 @@ button:disabled {
   font-weight: 400;
   margin: 8px 0 4px;
 }
+.grade-accuracy {
+  margin-top: 14px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--theme-text-muted);
+}
+.share-fallback {
+  max-width: 420px;
+  margin: -12px auto 24px;
+  padding: 14px 18px;
+  background: var(--theme-bg-panel);
+  border: 1px solid var(--theme-border-strong);
+  border-radius: 5px;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  user-select: all;
+}
+.pick-review {
+  margin: 8px 0 28px;
+}
+.pick-review__title {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--theme-text-muted);
+  margin-bottom: 12px;
+}
+.pick-review__list {
+  display: grid;
+  gap: 6px;
+}
+.pick-review__row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--theme-bg-panel);
+  border: 1px solid var(--theme-border);
+  border-left: 3px solid var(--outcome-color);
+  border-radius: 4px;
+  --outcome-color: #22c55e;
+}
+.pick-review__row--close {
+  --outcome-color: #eab308;
+}
+.pick-review__row--miss {
+  --outcome-color: #ef4444;
+}
+.pick-review__round {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--theme-text-muted);
+}
+.pick-review__pick strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--theme-text-primary);
+}
+.pick-review__pick span,
+.pick-review__verdict span {
+  font-size: 11px;
+  color: var(--theme-text-muted);
+}
+.pick-review__verdict {
+  text-align: right;
+}
+.pick-review__verdict span {
+  display: block;
+}
+.pick-review__verdict .pick-review__outcome {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--outcome-color);
+}
 .history-missions {
   color: var(--theme-accent-primary);
   font-size: 11px;
@@ -865,6 +945,18 @@ button:disabled {
   .result-insights {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+  .result-stats {
+    flex-wrap: wrap;
+    gap: 18px 24px;
+  }
+  .pick-review__row {
+    grid-template-columns: 36px 1fr;
+    gap: 4px 12px;
+  }
+  .pick-review__verdict {
+    grid-column: 2;
+    text-align: left;
   }
   .vault-filters {
     flex-wrap: wrap;

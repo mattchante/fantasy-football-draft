@@ -38,6 +38,7 @@ export function validateProgression(): void {
     rating: first.rating,
     tier: first.tier,
     roster: first.roster,
+    picks: first.draftState.picks,
   });
   progression = firstRecord.progression;
 
@@ -54,6 +55,7 @@ export function validateProgression(): void {
       rating: run.rating,
       tier: run.tier,
       roster: run.roster,
+      picks: run.draftState.picks,
     });
     progression = result.progression;
   }
@@ -61,8 +63,14 @@ export function validateProgression(): void {
   assert(progression.history.length === HISTORY_CAP, `history should cap at ${HISTORY_CAP}`);
   assert(progression.totalDrafts === 26, 'totalDrafts should continue past history cap');
 
-  const avg = Math.round(progression.totalScore / progression.totalDrafts);
-  assert(avg >= 44 && avg <= 212, 'average score should be in valid range');
+  const avg = Math.round(
+    (progression.totalAccuracy ?? 0) / (progression.gradedDrafts ?? 1),
+  );
+  assert(avg >= 0 && avg <= 100, 'average accuracy should be in valid range');
+  assert(
+    progression.history.every((entry) => typeof entry.grade === 'string'),
+    'new history entries should carry a draft grade',
+  );
 
   const cardIds = Object.keys(progression.cardDraftCounts);
   assert(cardIds.length > 0, 'cardDraftCounts should have entries');

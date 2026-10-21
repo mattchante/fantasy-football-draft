@@ -38,7 +38,9 @@ export function PlayerCard({
   const posColor = POSITION_COLORS[card.position];
   const { firstName, lastName } = parsePlayerName(card.name);
   const teamName = getTeamDisplayName(card.team);
-  const showStats = infoLevel === 'full';
+  const showStats = infoLevel !== 'identity';
+  // Scouting boards hide every number the score is derived from.
+  const showFantasy = infoLevel === 'full';
   const isReveal = variant === 'reveal' || variant === 'vault';
   const isVault = variant === 'vault';
   const isUndrafted = isVault && vaultState === 'undrafted';
@@ -162,35 +164,39 @@ export function PlayerCard({
             <div
               className={`player-card__stats ${isReveal ? 'player-card__stats--reveal' : ''}`}
             >
-              <div className="card-value">
-                <span>POSITION-ADJUSTED VALUE</span>
-                <strong>
-                  {card.normalizedValue.toFixed(1)}
-                  <small> / 95</small>
-                </strong>
-              </div>
-              <div className="player-card__stat-hero">
-                <div>
-                  <p className="player-card__stat-primary-label">
-                    Fantasy Points
-                  </p>
-                  <p
-                    className={`player-card__stat-primary-value ${isReveal ? 'player-card__stat-primary-value--reveal' : ''}`}
-                    style={{ color: posColor }}
-                  >
-                    {card.fantasyPoints}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="player-card__stat-primary-label">PPG</p>
-                  <p
-                    className={`player-card__stat-primary-value ${isReveal ? 'player-card__stat-primary-value--reveal' : ''}`}
-                    style={{ color: 'rgba(255,255,255,0.85)' }}
-                  >
-                    {card.fantasyPointsPerGame}
-                  </p>
-                </div>
-              </div>
+              {showFantasy && (
+                <>
+                  <div className="card-value">
+                    <span>POSITION-ADJUSTED VALUE</span>
+                    <strong>
+                      {card.normalizedValue.toFixed(1)}
+                      <small> / 95</small>
+                    </strong>
+                  </div>
+                  <div className="player-card__stat-hero">
+                    <div>
+                      <p className="player-card__stat-primary-label">
+                        Fantasy Points
+                      </p>
+                      <p
+                        className={`player-card__stat-primary-value ${isReveal ? 'player-card__stat-primary-value--reveal' : ''}`}
+                        style={{ color: posColor }}
+                      >
+                        {card.fantasyPoints}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="player-card__stat-primary-label">PPG</p>
+                      <p
+                        className={`player-card__stat-primary-value ${isReveal ? 'player-card__stat-primary-value--reveal' : ''}`}
+                        style={{ color: 'rgba(255,255,255,0.85)' }}
+                      >
+                        {card.fantasyPointsPerGame}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {headlineStats.map((stat) => (
                 <div

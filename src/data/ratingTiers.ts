@@ -1,13 +1,15 @@
 import type { RatingTier } from '../types';
 
+// Team strength tiers on the uncapped weighted card total (eight cards, 40–95
+// each, MVP x1.1). Boundaries match the old 44–212 scale's tier breaks.
 export const RATING_TIERS: RatingTier[] = [
-  { min: 44, max: 84, label: 'Disaster', color: '#ef4444' },
-  { min: 85, max: 119, label: 'Fringe Team', color: '#f97316' },
-  { min: 120, max: 149, label: 'Playoff Team', color: '#eab308' },
-  { min: 150, max: 174, label: 'Contender', color: '#22c55e' },
-  { min: 175, max: 194, label: 'Juggernaut', color: '#3b82f6' },
-  { min: 195, max: 207, label: 'Legendary', color: '#a855f7' },
-  { min: 208, max: 212, label: 'Broken', color: '#f5c842' },
+  { min: 0, max: 467, label: 'Disaster', color: '#ef4444' },
+  { min: 468, max: 526, label: 'Fringe Team', color: '#f97316' },
+  { min: 527, max: 576, label: 'Playoff Team', color: '#eab308' },
+  { min: 577, max: 618, label: 'Contender', color: '#22c55e' },
+  { min: 619, max: 651, label: 'Juggernaut', color: '#3b82f6' },
+  { min: 652, max: 673, label: 'Legendary', color: '#a855f7' },
+  { min: 674, max: Infinity, label: 'Broken', color: '#f5c842' },
 ];
 
 export function getRatingTier(rating: number): RatingTier {

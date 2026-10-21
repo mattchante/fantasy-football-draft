@@ -27,6 +27,17 @@ function sanitizeOptionalNumber(value: unknown): number | undefined {
   return undefined;
 }
 
+/** Keeps only finite per-mode numbers, so unset modes stay absent. */
+function sanitizeModeNumbers(value: unknown): { normal?: number; hard?: number } {
+  const raw = isRecord(value) ? value : {};
+  const result: { normal?: number; hard?: number } = {};
+  for (const mode of ['normal', 'hard'] as const) {
+    const number = sanitizeOptionalNumber(raw[mode]);
+    if (number !== undefined) result[mode] = number;
+  }
+  return result;
+}
+
 function sanitizeCardDraftCounts(value: unknown): Record<string, number> {
   if (!isRecord(value)) return {};
   const result: Record<string, number> = {};
@@ -89,6 +100,16 @@ function sanitizeHistory(value: unknown): ProgressionData['history'] {
         typeof item.tierLabel === 'string' ? item.tierLabel : 'Unknown',
       tierColor:
         typeof item.tierColor === 'string' ? item.tierColor : '#94a3b8',
+      ...(typeof item.grade === 'string' &&
+      typeof item.gradeColor === 'string' &&
+      typeof item.accuracy === 'number' &&
+      Number.isFinite(item.accuracy)
+        ? {
+            grade: item.grade,
+            gradeColor: item.gradeColor,
+            accuracy: item.accuracy,
+          }
+        : {}),
       roster,
       missionIds: Array.isArray(item.missionIds)
         ? item.missionIds.filter((id): id is string => typeof id === 'string')
@@ -104,17 +125,16 @@ function sanitizeProgression(raw: unknown): ProgressionData {
     return createEmptyProgression();
   }
 
-  const bestScoresRaw = isRecord(raw.bestScores) ? raw.bestScores : {};
 
   return {
     version: 1,
     missionWins: sanitizeCardDraftCounts(raw.missionWins),
     totalDrafts: Math.max(0, Math.floor(sanitizeNumber(raw.totalDrafts))),
     totalScore: Math.max(0, sanitizeNumber(raw.totalScore)),
-    bestScores: {
-      normal: sanitizeOptionalNumber(bestScoresRaw.normal),
-      hard: sanitizeOptionalNumber(bestScoresRaw.hard),
-    },
+    bestScores: sanitizeModeNumbers(raw.bestScores),
+    bestAccuracy: sanitizeModeNumbers(raw.bestAccuracy),
+    totalAccuracy: Math.max(0, sanitizeNumber(raw.totalAccuracy)),
+    gradedDrafts: Math.max(0, Math.floor(sanitizeNumber(raw.gradedDrafts))),
     cardDraftCounts: sanitizeCardDraftCounts(raw.cardDraftCounts),
     history: sanitizeHistory(raw.history),
   };

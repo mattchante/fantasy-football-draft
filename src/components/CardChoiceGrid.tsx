@@ -65,7 +65,7 @@ export function CardChoiceGrid({
                   </span>
                 ))
               ) : (
-                <span>Build for the rating</span>
+                <span>Build for the grade</span>
               )}
             </div>
           </div>

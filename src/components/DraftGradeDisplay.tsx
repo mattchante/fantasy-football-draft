@@ -1,27 +1,28 @@
-import type { RatingTier } from '../types';
+import type { DraftGradeTier } from '../types';
 
-interface TeamRatingProps {
-  rating: number;
-  tier: RatingTier;
+interface DraftGradeDisplayProps {
+  tier: DraftGradeTier;
+  accuracy: number;
 }
 
-export function TeamRating({ rating, tier }: TeamRatingProps) {
+export function DraftGradeDisplay({ tier, accuracy }: DraftGradeDisplayProps) {
   return (
     <div className="text-center py-4">
       <p className="text-sm uppercase tracking-[0.3em] text-theme-muted mb-3">
-        Team Rating
+        Draft Grade
       </p>
       <div
         className="font-display text-8xl md:text-9xl leading-none rating-glow"
         style={{ color: tier.color }}
       >
-        {rating}
+        {tier.grade}
       </div>
       <p className="mt-4">
         <span className="tier-badge" style={{ color: tier.color }}>
           {tier.label}
         </span>
       </p>
+      <p className="grade-accuracy">{accuracy}% draft accuracy</p>
     </div>
   );
 }

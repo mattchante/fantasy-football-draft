@@ -64,6 +64,8 @@ export interface DraftedPick {
   card: PlayerCard;
   slot: RosterSlot;
   roundNumber: number;
+  /** Every card offered on the final board for this pick, including the pick. */
+  board: PlayerCard[];
 }
 
 export interface DraftState {
@@ -97,11 +99,18 @@ export interface RatingTier {
   color: string;
 }
 
+export interface DraftGradeTier {
+  min: number;
+  grade: string;
+  label: string;
+  color: string;
+}
+
 export type GamePhase = 'home' | 'draft' | 'reveal' | 'history' | 'vault';
 
 export type GameMode = 'normal' | 'hard';
 
-export type CardInfoLevel = 'full' | 'identity';
+export type CardInfoLevel = 'full' | 'scouting' | 'identity';
 
 export interface CompletionFeedback {
   isPersonalBest: boolean;

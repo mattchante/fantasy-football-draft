@@ -1,4 +1,5 @@
-import type { GameMode, RatingTier, RosterState } from '../../types';
+import type { DraftedPick, GameMode, RatingTier, RosterState } from '../../types';
+import { getDraftGrade } from '../draftGrade';
 import { getRosterCards } from '../roster';
 import { getMissionProgress } from '../missions';
 import type {
@@ -15,6 +16,7 @@ export interface RecordCompletedDraftInput {
   rating: number;
   tier: RatingTier;
   roster: RosterState;
+  picks: DraftedPick[];
 }
 
 export interface RecordCompletedDraftResult {
@@ -36,11 +38,11 @@ function buildHistoryRoster(roster: RosterState): HistoryRosterEntry[] {
 function computeFeedback(
   progression: ProgressionData,
   mode: GameMode,
-  rating: number,
+  accuracy: number,
   cardIds: string[],
 ): CompletionFeedback {
-  const previousBest = progression.bestScores[mode];
-  const isPersonalBest = previousBest === undefined || rating > previousBest;
+  const previousBest = progression.bestAccuracy?.[mode];
+  const isPersonalBest = previousBest === undefined || accuracy > previousBest;
 
   const newCardIds = cardIds.filter(
     (id) => (progression.cardDraftCounts[id] ?? 0) === 0,
@@ -52,11 +54,12 @@ function computeFeedback(
 export function recordCompletedDraft(
   input: RecordCompletedDraftInput,
 ): RecordCompletedDraftResult {
-  const { progression, mode, rating, tier, roster } = input;
+  const { progression, mode, rating, tier, roster, picks } = input;
   const rosterEntries = buildHistoryRoster(roster);
   const cardIds = rosterEntries.map((entry) => entry.cardId);
+  const { accuracy, tier: gradeTier } = getDraftGrade(picks);
 
-  const feedback = computeFeedback(progression, mode, rating, cardIds);
+  const feedback = computeFeedback(progression, mode, accuracy, cardIds);
 
   const updatedCounts = { ...progression.cardDraftCounts };
   for (const cardId of cardIds) {
@@ -79,12 +82,15 @@ export function recordCompletedDraft(
     rating,
     tierLabel: tier.label,
     tierColor: tier.color,
+    grade: gradeTier.grade,
+    gradeColor: gradeTier.color,
+    accuracy,
     roster: rosterEntries,
   };
 
-  const updatedBestScores = { ...progression.bestScores };
+  const bestAccuracy = { ...progression.bestAccuracy };
   if (feedback.isPersonalBest) {
-    updatedBestScores[mode] = rating;
+    bestAccuracy[mode] = accuracy;
   }
 
   const updated: ProgressionData = {
@@ -92,7 +98,10 @@ export function recordCompletedDraft(
     missionWins,
     totalDrafts: progression.totalDrafts + 1,
     totalScore: progression.totalScore + rating,
-    bestScores: updatedBestScores,
+    bestScores: progression.bestScores,
+    bestAccuracy,
+    totalAccuracy: (progression.totalAccuracy ?? 0) + accuracy,
+    gradedDrafts: (progression.gradedDrafts ?? 0) + 1,
     cardDraftCounts: updatedCounts,
     history: [snapshot, ...progression.history].slice(0, HISTORY_CAP),
   };

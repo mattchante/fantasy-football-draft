@@ -1,13 +1,10 @@
+import { formatGradeScore } from '../data/draftGrades';
 import { getPersonalRecords, type ProgressionData } from '../lib/progression';
 
 interface PersonalRecordsProps {
   progression: ProgressionData;
   compact?: boolean;
   onReset?: () => void;
-}
-
-function formatScore(value: number | null): string {
-  return value === null ? '—' : String(value);
 }
 
 export function PersonalRecords({ progression, compact = false, onReset }: PersonalRecordsProps) {
@@ -19,19 +16,19 @@ export function PersonalRecords({ progression, compact = false, onReset }: Perso
       <div className="personal-records__grid">
         <div className="personal-records__item">
           <span className="personal-records__label">Best Normal</span>
-          <span className="personal-records__value">{formatScore(records.bestNormal)}</span>
+          <span className="personal-records__value">{formatGradeScore(records.bestNormal)}</span>
         </div>
         <div className="personal-records__item">
           <span className="personal-records__label">Best Hard</span>
-          <span className="personal-records__value">{formatScore(records.bestHard)}</span>
+          <span className="personal-records__value">{formatGradeScore(records.bestHard)}</span>
         </div>
         <div className="personal-records__item">
           <span className="personal-records__label">Total Drafts</span>
           <span className="personal-records__value">{records.totalDrafts}</span>
         </div>
         <div className="personal-records__item">
-          <span className="personal-records__label">Average Score</span>
-          <span className="personal-records__value">{formatScore(records.averageScore)}</span>
+          <span className="personal-records__label">Average Grade</span>
+          <span className="personal-records__value">{formatGradeScore(records.averageAccuracy)}</span>
         </div>
       </div>
       {onReset && (

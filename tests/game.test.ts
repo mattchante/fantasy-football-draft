@@ -11,6 +11,8 @@ import {
   MVP_WEIGHT,
 } from '../src/lib/teamRating';
 import { getMissionProgress } from '../src/lib/missions';
+import { formatShareText, getDraftGrade } from '../src/lib/draftGrade';
+import { getDraftGradeTier } from '../src/data/draftGrades';
 import { PLAYER_CARDS } from '../src/data/playerCards';
 import {
   createEmptyProgression,
@@ -122,21 +124,38 @@ for (let run = 0; run < 1000; run++) {
     0,
   );
   assert.ok(Math.abs(expectedRaw - calculateRawScore(roster)) < 1e-8);
-  assert.equal(
-    rating,
-    Math.round(
-      Math.max(44, Math.min(212, 44 + ((expectedRaw - 400) / 280) * 168)),
-    ),
-  );
+  assert.equal(rating, Math.round(expectedRaw), 'Team strength is uncapped');
   ratings.push(rating);
+  for (const draftPick of state.picks) {
+    assert.equal(draftPick.board.length, 3, 'Each pick records its board');
+    assert.ok(
+      draftPick.board.some((card) => card.id === draftPick.card.id),
+      'The board contains the pick',
+    );
+  }
+  const grade = getDraftGrade(state.picks);
+  assert.ok(grade.accuracy >= 0 && grade.accuracy <= 100);
+  assert.equal(grade.tier, getDraftGradeTier(grade.accuracy));
+  assert.equal(grade.rounds.length, 8);
+  if (run % 3 === 0) {
+    assert.equal(grade.accuracy, 100, 'Best-value picks score 100%');
+    assert.equal(grade.bestPicks, 8);
+  }
+  if (run === 0) {
+    const share = formatShareText(grade, 'normal', rating, tier.label);
+    assert.match(share, /^Draft Cards · Normal\n/);
+    assert.equal([...share.split('\n')[2]].length, 8, 'One square per pick');
+  }
   const record = recordCompletedDraft({
     progression,
     mode: run % 2 ? 'hard' : 'normal',
     rating,
     tier,
     roster,
+    picks: state.picks,
   });
   progression = record.progression;
+  assert.equal(progression.history[0].accuracy, grade.accuracy);
   assert.equal(
     progression.history[0].missionIds?.length,
     getMissionProgress(roster).filter((m) => m.complete).length,
@@ -207,6 +226,12 @@ assert.equal(
   3,
   'Old saves load without mission fields',
 );
+assert.deepEqual(
+  loadProgression().bestAccuracy,
+  {},
+  'Old team-rating bests do not carry over as draft-grade bests',
+);
+assert.equal(loadProgression().bestScores.normal, 150, 'Legacy bests are kept');
 Object.defineProperty(globalThis, 'localStorage', {
   configurable: true,
   get() {
@@ -216,5 +241,5 @@ Object.defineProperty(globalThis, 'localStorage', {
 assert.equal(loadProgression().totalDrafts, 0);
 assert.doesNotThrow(() => saveProgression(progression));
 console.log(
-  `PASS: 1,000 redraw drafts across all seven legal redraw rounds; ${openBoards} honest fallback boards; ratings ${Math.min(...ratings)}–${Math.max(...ratings)}. Mission, scoring, persistence, migration and storage isolation checks passed.`,
+  `PASS: 1,000 redraw drafts across all seven legal redraw rounds; ${openBoards} honest fallback boards; team strength ${Math.min(...ratings)}–${Math.max(...ratings)}. Mission, scoring, persistence, migration and storage isolation checks passed.`,
 );

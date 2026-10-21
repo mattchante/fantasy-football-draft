@@ -348,7 +348,12 @@ export function applyPick(
 
   const picks = [
     ...state.picks,
-    { card, slot, roundNumber: state.picks.length + 1 },
+    {
+      card,
+      slot,
+      roundNumber: state.picks.length + 1,
+      board: state.currentRound?.cards ?? [card],
+    },
   ];
 
   const newState: DraftState = {

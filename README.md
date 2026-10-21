@@ -18,11 +18,11 @@ npm run preview
 
 ## The game
 
-1. Choose **Normal** (full scouting stats) or **Hard** (identity and season only).
+1. Choose **Normal** (box-score stats only) or **Hard** (identity and season only). Card values and fantasy points stay hidden until the draft ends.
 2. Draft seven players into QB, RB1, RB2, WR1, WR2, TE and FLEX. FLEX accepts RB, WR or TE; cards show exactly where they will go.
 3. Once per draft, optionally **redraw the board**. All three options are replaced and the new board may be worse. Redraw is unavailable in the MVP round.
 4. The eighth pick is the **MVP Showcase**: an elite season at any position, worth a 10% bonus to its card value.
-5. Get your team rating, compare it with your previous best, see your strongest season and improvement opportunity, then run it back.
+5. Get your **Draft Grade**, review every pick against the best card on its board, share the result, then run it back.
 
 Optional missions add a second reason to choose a card:
 
@@ -34,17 +34,21 @@ Mission stamps are awarded only on completed drafts. They never add rating point
 
 ## Scoring
 
-The underlying scoring and player dataset are preserved. Full PPR fantasy points use one point per reception. Each season's `normalizedValue` is a position-relative rank within this collection, on a 40–95 scale. The team rating uses the sum of seven values plus 1.1 times the MVP's value, mapped to 44–212:
+The underlying player dataset is preserved. Full PPR fantasy points use one point per reception. Each season's `normalizedValue` is a position-relative rank within this collection, on a 40–95 scale.
+
+**Draft Grade** is the headline score. On every board, the best card earns full credit and the weakest earns none; accuracy is the share of available value captured across all eight boards, with the MVP board weighted 1.1×:
 
 ```text
-round(clamp(44 + (weighted sum - 400) / 280 * 168, 44, 212))
+accuracy = round(100 * Σ w * (pick - boardMin) / Σ w * (boardMax - boardMin))
 ```
 
-The results PPR total is the sum of individual historical season totals, not a simulated shared season. The dataset is static, not a live NFL feed. No player statistics were changed in this improvement pass.
+Accuracy maps to grades from F to A+ (`src/data/draftGrades.ts`). The thresholds are calibrated by simulation: random picks average about 51% (C-), a box-score formula about 77% (B), formula plus flavor tags about 84% (B+). Reaching an A takes real football knowledge. Each pick is marked best on board (🟩), close (🟨, within 10 value points) or missed (🟥), which is also the share format.
+
+**Team strength** is the uncapped sum of the eight card values, MVP ×1.1, with tier labels from Disaster to Broken. The results PPR total is the sum of individual historical season totals, not a simulated shared season. The dataset is static, not a live NFL feed.
 
 ## Collection and persistence
 
-Completed drafts, separate Normal/Hard records, collection counts, and lifetime mission stamps are saved in browser local storage. The latest 25 rosters are retained; lifetime totals and stamps continue beyond that limit. Existing version-1 saves and card-ID migrations remain compatible. Vault search supports player, team abbreviation/name, and year, combined with position and collected/missing filters.
+Completed drafts, separate Normal/Hard best grades, collection counts, and lifetime mission stamps are saved in browser local storage. The latest 25 rosters are retained; lifetime totals and stamps continue beyond that limit. Existing version-1 saves and card-ID migrations remain compatible. Vault search supports player, team abbreviation/name, and year, combined with position and collected/missing filters.
 
 Progress is local to this browser and origin. An unfinished draft is not restored after a refresh. If storage is unavailable, play continues in memory. Reset Progression clears saved records and mission stamps after confirmation.
 

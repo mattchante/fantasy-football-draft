@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { formatGradeScore } from '../data/draftGrades';
 import type {
   DraftState,
   GameMode,
@@ -20,7 +21,7 @@ interface DraftScreenProps {
   gameMode: GameMode;
   currentRound: GeneratedRound;
   cardDraftCounts: Record<string, number>;
-  bestScore?: number;
+  bestAccuracy?: number;
   onPick: (draftState: DraftState, roster: RosterState) => void;
   onComplete: (draftState: DraftState, roster: RosterState) => void;
   onRestartDraft: () => void;
@@ -33,7 +34,7 @@ export function DraftScreen({
   gameMode,
   currentRound,
   cardDraftCounts,
-  bestScore,
+  bestAccuracy,
   onPick,
   onComplete,
   onRestartDraft,
@@ -51,7 +52,7 @@ export function DraftScreen({
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [currentRound]);
 
-  const infoLevel = gameMode === 'hard' ? 'identity' : 'full';
+  const infoLevel = gameMode === 'hard' ? 'identity' : 'scouting';
 
   const handleSelect = useCallback(
     (cardId: string) => {
@@ -89,7 +90,7 @@ export function DraftScreen({
           <span>
             {gameMode === 'hard'
               ? 'HARD · STATS HIDDEN'
-              : 'NORMAL · FULL SCOUTING'}
+              : 'NORMAL · BOX SCORES'}
           </span>
         </div>
         <DraftHeader pickNumber={pickNumber} />
@@ -108,7 +109,7 @@ export function DraftScreen({
             </strong>
             <p>
               {currentRound.isMvpRound
-                ? 'MVP adds 10% to this card’s rating value.'
+                ? 'The MVP board counts 10% extra toward your grade.'
                 : 'Tap a card to draft. Unpicked cards leave the board.'}
             </p>
           </div>
@@ -146,9 +147,9 @@ export function DraftScreen({
           <aside className="draft-sidebar">
             <div className="record-target">
               <span>PERSONAL BEST · {gameMode.toUpperCase()}</span>
-              <strong>{bestScore ?? '—'}</strong>
+              <strong>{formatGradeScore(bestAccuracy)}</strong>
               <p>
-                {bestScore
+                {bestAccuracy !== undefined
                   ? 'A new board. A new shot at the record.'
                   : 'Your first completed draft sets the bar.'}
               </p>
@@ -165,11 +166,12 @@ export function DraftScreen({
         <details className="scoring-note">
           <summary>How does scoring work?</summary>
           <p>
-            Card value (40–95) ranks a season against others at its position in
-            this collection. Your team rating (44–212) uses the sum of those
-            values, with a 10% bonus for the MVP. Raw fantasy points use full
-            PPR: one point per reception. Missions and collection discoveries
-            never change your rating.
+            Every card has a hidden value (40–95) ranking its full-PPR season
+            against others at its position. Your draft grade measures how much
+            of each board’s value you captured: the best card on a board scores
+            full credit, the weakest scores none. The MVP board counts 10%
+            extra. Values, fantasy points and the best card you passed are
+            revealed when the draft ends. Missions never change your grade.
           </p>
         </details>
       </div>

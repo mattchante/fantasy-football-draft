@@ -77,19 +77,21 @@ function App() {
         const { rating, tier } = getTeamRatingResult(newRoster);
         if (completedSession.current) return;
         completedSession.current = true;
-        setPreviousBest(progression.bestScores[gameMode]);
+        setPreviousBest(progression.bestAccuracy?.[gameMode]);
         const { progression: updated, feedback } = recordCompletedDraft({
           progression,
           mode: gameMode,
           rating,
           tier,
           roster: newRoster,
+          picks: newDraftState.picks,
         });
         saveProgression(updated);
         setProgression(updated);
         setCompletionFeedback(feedback);
       }
       setRoster(newRoster);
+      setDraftState(newDraftState);
       setPhase('reveal');
     },
     [gameMode, progression],
@@ -131,6 +133,7 @@ function App() {
     return (
       <TeamReveal
         roster={roster}
+        picks={draftState?.picks ?? []}
         gameMode={gameMode}
         completionFeedback={completionFeedback}
         previousBest={previousBest}
@@ -149,7 +152,7 @@ function App() {
         gameMode={gameMode}
         currentRound={draftState.currentRound}
         cardDraftCounts={progression.cardDraftCounts}
-        bestScore={progression.bestScores[gameMode]}
+        bestAccuracy={progression.bestAccuracy?.[gameMode]}
         onPick={handlePick}
         onComplete={handleComplete}
         onRestartDraft={beginFreshDraft}

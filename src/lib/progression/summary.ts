@@ -10,13 +10,15 @@ export function isCardCollected(count: number): boolean {
 }
 
 export function getPersonalRecords(progression: ProgressionData): PersonalRecordsSummary {
-  const { bestScores, totalDrafts, totalScore } = progression;
+  const { bestAccuracy, totalDrafts, totalAccuracy = 0, gradedDrafts = 0 } =
+    progression;
 
   return {
-    bestNormal: bestScores.normal ?? null,
-    bestHard: bestScores.hard ?? null,
+    bestNormal: bestAccuracy?.normal ?? null,
+    bestHard: bestAccuracy?.hard ?? null,
     totalDrafts,
-    averageScore: totalDrafts > 0 ? Math.round(totalScore / totalDrafts) : null,
+    averageAccuracy:
+      gradedDrafts > 0 ? Math.round(totalAccuracy / gradedDrafts) : null,
   };
 }
 

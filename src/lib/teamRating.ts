@@ -4,10 +4,6 @@ import { getRosterCards } from './roster';
 
 export const MVP_WEIGHT = 1.1;
 
-// Calibrated against curated dataset: raw scores typically range ~450–700
-const MIN_EXPECTED = 400;
-const MAX_EXPECTED = 680;
-
 export function calculateRawScore(roster: RosterState): number {
   const cards = getRosterCards(roster);
   let total = 0;
@@ -20,10 +16,9 @@ export function calculateRawScore(roster: RosterState): number {
   return total;
 }
 
+/** Team strength is the uncapped weighted card total, rounded for display. */
 export function calculateTeamRating(roster: RosterState): number {
-  const rawScore = calculateRawScore(roster);
-  const rating = 44 + ((rawScore - MIN_EXPECTED) / (MAX_EXPECTED - MIN_EXPECTED)) * 168;
-  return Math.round(Math.max(44, Math.min(212, rating)));
+  return Math.round(calculateRawScore(roster));
 }
 
 export function getTeamRatingResult(roster: RosterState) {

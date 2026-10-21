@@ -25,13 +25,29 @@ export function HistoryEntry({ entry }: HistoryEntryProps) {
     <article className="history-entry">
       <div className="history-entry__header">
         <div className="history-entry__score-block">
-          <span className="history-entry__score">{entry.rating}</span>
-          <span
-            className="tier-badge history-entry__tier"
-            style={{ color: entry.tierColor }}
-          >
-            {entry.tierLabel}
-          </span>
+          {entry.grade ? (
+            <>
+              <span
+                className="history-entry__score"
+                style={{ color: entry.gradeColor }}
+              >
+                {entry.grade}
+              </span>
+              <span className="history-entry__tier">
+                {entry.accuracy}% · {entry.tierLabel}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="history-entry__score">{entry.rating}</span>
+              <span
+                className="tier-badge history-entry__tier"
+                style={{ color: entry.tierColor }}
+              >
+                {entry.tierLabel} · Classic
+              </span>
+            </>
+          )}
         </div>
         <div className="history-entry__meta">
           <span className="history-entry__mode">

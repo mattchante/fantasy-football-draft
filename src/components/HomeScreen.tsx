@@ -99,7 +99,7 @@ export function HomeScreen({
                   <p className="home-play__hard-hint">
                     {gameMode === 'hard'
                       ? 'Trust your ball knowledge. Stats revealed at the finish.'
-                      : 'All stats visible. Find the season, not just the superstar.'}
+                      : 'Box scores only. Spot the best season on every board.'}
                   </p>
                 </div>
                 <button

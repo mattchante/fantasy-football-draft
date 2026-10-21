@@ -1,6 +1,7 @@
 import { startDraft, applyPick } from '../draftEngine';
 import { getRosterCards, isRosterComplete } from '../roster';
 import { getTeamRatingResult } from '../teamRating';
+import { getDraftGrade } from '../draftGrade';
 
 const STRESS_RUNS = 1000;
 
@@ -16,8 +17,7 @@ export function validateDraftStress(): void {
   let failures = 0;
   let duplicatePlayerFailures = 0;
   const ratings: number[] = [];
-  let clampedLow = 0;
-  let clampedHigh = 0;
+  const accuracies: number[] = [];
 
   for (let i = 0; i < STRESS_RUNS; i++) {
     try {
@@ -44,23 +44,23 @@ export function validateDraftStress(): void {
 
       const { rating } = getTeamRatingResult(currentRoster);
       ratings.push(rating);
-      if (rating <= 44) clampedLow++;
-      if (rating >= 212) clampedHigh++;
+      accuracies.push(getDraftGrade(state.picks).accuracy);
     } catch {
       failures++;
     }
   }
 
   ratings.sort((a, b) => a - b);
+  accuracies.sort((a, b) => a - b);
 
   console.log(`Runs: ${STRESS_RUNS}`);
   console.log(`Failures: ${failures}`);
   console.log(`Duplicate playerId rosters: ${duplicatePlayerFailures}`);
   console.log(
-    `Rating min/median/p95/max: ${ratings[0] ?? 0}/${percentile(ratings, 0.5)}/${percentile(ratings, 0.95)}/${ratings[ratings.length - 1] ?? 0}`,
+    `Team strength min/median/p95/max: ${ratings[0] ?? 0}/${percentile(ratings, 0.5)}/${percentile(ratings, 0.95)}/${ratings[ratings.length - 1] ?? 0}`,
   );
   console.log(
-    `Clamped at 44: ${((clampedLow / STRESS_RUNS) * 100).toFixed(2)}%, at 212: ${((clampedHigh / STRESS_RUNS) * 100).toFixed(2)}%`,
+    `First-card accuracy p10/median/p90: ${percentile(accuracies, 0.1)}/${percentile(accuracies, 0.5)}/${percentile(accuracies, 0.9)}`,
   );
 
   if (failures > 0 || duplicatePlayerFailures > 0) {
