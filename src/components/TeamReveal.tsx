@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DraftMissions } from './DraftMissions';
+import { AchievementTile } from './AchievementTile';
 import { getRosterCards } from '../lib/roster';
 import { DRAFT_GRADES } from '../data/draftGrades';
 import type {
@@ -10,6 +10,8 @@ import type {
 } from '../types';
 import { getTeamRatingResult } from '../lib/teamRating';
 import { formatShareText, getDraftGrade } from '../lib/draftGrade';
+import { getCollectionBook } from '../lib/achievements';
+import type { ProgressionData } from '../lib/progression';
 import { DraftGradeDisplay } from './DraftGradeDisplay';
 import { FinalRosterGrid } from './FinalRosterGrid';
 import { PickReview } from './PickReview';
@@ -20,9 +22,11 @@ interface TeamRevealProps {
   picks: DraftedPick[];
   gameMode: GameMode;
   completionFeedback: CompletionFeedback | null;
+  progression: ProgressionData;
   previousBest?: number;
   onDraftAgain: () => void;
   onMainMenu: () => void;
+  onOpenAchievements: () => void;
 }
 
 type ShareState = 'idle' | 'copied' | 'failed';
@@ -32,9 +36,11 @@ export function TeamReveal({
   picks,
   gameMode,
   completionFeedback,
+  progression,
   previousBest,
   onDraftAgain,
   onMainMenu,
+  onOpenAchievements,
 }: TeamRevealProps) {
   const [shareState, setShareState] = useState<ShareState>('idle');
   const { rating, tier: teamTier, rawScore } = getTeamRatingResult(roster);
@@ -53,11 +59,19 @@ export function TeamReveal({
         b.pick.normalizedValue -
         (a.best.normalizedValue - a.pick.normalizedValue),
     )[0];
+  const book = getCollectionBook(progression);
+  const earnedIds = completionFeedback?.earnedAchievementIds ?? [];
+  const earned = book.filter((entry) =>
+    earnedIds.includes(entry.achievement.id),
+  );
+  const stillLocked = book.filter((entry) => entry.count === 0).length;
   const nextGrade = [...DRAFT_GRADES].reverse().find((g) => g.min > accuracy);
   const totalPoints = ranked.reduce(
     (total, { card }) => total + card.fantasyPoints,
     0,
   );
+
+  const points = (n: number) => `${n} point${n === 1 ? '' : 's'}`;
 
   const handleShare = async () => {
     try {
@@ -105,10 +119,10 @@ export function TeamReveal({
               {previousBest === undefined
                 ? 'Your first graded draft is on the board. Now give yourself something to chase.'
                 : accuracy > previousBest
-                  ? `${accuracy - previousBest} points above your previous best of ${previousBest}%.`
+                  ? `${points(accuracy - previousBest)} above your previous best of ${previousBest}%.`
                   : accuracy === previousBest
                     ? `You matched your personal best of ${previousBest}%.`
-                    : `${previousBest - accuracy} points away from your personal best of ${previousBest}%.`}
+                    : `${points(previousBest - accuracy)} away from your personal best of ${previousBest}%.`}
             </p>
             <div className="result-stats">
               <div>
@@ -129,7 +143,7 @@ export function TeamReveal({
             </div>
             <p className="result-next">
               {nextGrade
-                ? `${nextGrade.min - accuracy} more accuracy points to reach ${nextGrade.grade}.`
+                ? `${nextGrade.min - accuracy} more point${nextGrade.min - accuracy === 1 ? '' : 's'} to reach ${nextGrade.grade}.`
                 : 'Top grade. Try it with no stats at all in Hard mode.'}
             </p>
           </div>
@@ -156,7 +170,42 @@ export function TeamReveal({
           </pre>
         )}
         <PickReview rounds={grade.rounds} />
-        <DraftMissions roster={roster} />
+        <section
+          className="result-achievements"
+          aria-labelledby="result-achievements-title"
+        >
+          <h2
+            id="result-achievements-title"
+            className="result-achievements__title"
+          >
+            Achievements this draft
+          </h2>
+          {earned.length > 0 ? (
+            <div className="achievement-grid">
+              {earned.map((entry) => (
+                <AchievementTile
+                  key={entry.achievement.id}
+                  entry={entry}
+                  isNew={completionFeedback?.newAchievementIds.includes(
+                    entry.achievement.id,
+                  )}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="result-achievements__empty">
+              None this time. {stillLocked} still locked in your collection
+              book.
+            </p>
+          )}
+          <button
+            type="button"
+            className="result-achievements__open"
+            onClick={onOpenAchievements}
+          >
+            Open collection book →
+          </button>
+        </section>
         <div className="result-insights">
           <p>
             <span>STRONGEST SEASON</span>
@@ -193,7 +242,7 @@ export function TeamReveal({
             MVP board weighted 10% extra. Team strength is the total of your
             eight card values ({rawScore.toFixed(1)}, MVP ×1.1), uncapped. The
             PPR total is a sum of historical season totals, not a simulated
-            season. Missions do not change your grade.
+            season. Achievements do not change your grade.
           </p>
         </details>
 

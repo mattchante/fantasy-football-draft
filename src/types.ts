@@ -106,7 +106,13 @@ export interface DraftGradeTier {
   color: string;
 }
 
-export type GamePhase = 'home' | 'draft' | 'reveal' | 'history' | 'vault';
+export type GamePhase =
+  | 'home'
+  | 'draft'
+  | 'reveal'
+  | 'history'
+  | 'vault'
+  | 'achievements';
 
 export type GameMode = 'normal' | 'hard';
 
@@ -115,4 +121,8 @@ export type CardInfoLevel = 'full' | 'scouting' | 'identity';
 export interface CompletionFeedback {
   isPersonalBest: boolean;
   newCardIds: string[];
+  /** Achievements counted for this draft, in collection order. */
+  earnedAchievementIds: string[];
+  /** The subset unlocked for the first time. */
+  newAchievementIds: string[];
 }

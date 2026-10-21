@@ -1,7 +1,8 @@
 import type { DraftedPick, GameMode, RatingTier, RosterState } from '../../types';
 import { getDraftGrade } from '../draftGrade';
 import { getRosterCards } from '../roster';
-import { getMissionProgress } from '../missions';
+import { PLAYER_CARDS } from '../../data/playerCards';
+import { evaluateAchievements } from '../achievements';
 import type {
   CompletedDraftSnapshot,
   CompletionFeedback,
@@ -40,7 +41,7 @@ function computeFeedback(
   mode: GameMode,
   accuracy: number,
   cardIds: string[],
-): CompletionFeedback {
+): Pick<CompletionFeedback, 'isPersonalBest' | 'newCardIds'> {
   const previousBest = progression.bestAccuracy?.[mode];
   const isPersonalBest = previousBest === undefined || accuracy > previousBest;
 
@@ -66,18 +67,31 @@ export function recordCompletedDraft(
     updatedCounts[cardId] = (updatedCounts[cardId] ?? 0) + 1;
   }
 
-  const missionIds = getMissionProgress(roster)
-    .filter((m) => m.complete)
-    .map((m) => m.id);
-  const missionWins = { ...progression.missionWins };
-  missionIds.forEach((id) => {
-    missionWins[id] = (missionWins[id] ?? 0) + 1;
-  });
+  const completedAt = new Date().toISOString();
+  const totalDrafts = progression.totalDrafts + 1;
+  const achievements = { ...progression.achievements };
+  const earnedAchievementIds: string[] = [];
+  const newAchievementIds: string[] = [];
+  for (const achievement of evaluateAchievements({
+    picks,
+    mode,
+    totalDrafts,
+    collectedCards: PLAYER_CARDS.filter((card) => updatedCounts[card.id] > 0)
+      .length,
+  })) {
+    const existing = achievements[achievement.id];
+    if (existing && !achievement.repeatable) continue;
+    achievements[achievement.id] = existing
+      ? { ...existing, count: existing.count + 1 }
+      : { count: 1, firstEarnedAt: completedAt };
+    earnedAchievementIds.push(achievement.id);
+    if (!existing) newAchievementIds.push(achievement.id);
+  }
 
   const snapshot: CompletedDraftSnapshot = {
-    missionIds,
+    achievementIds: earnedAchievementIds,
     id: crypto.randomUUID(),
-    completedAt: new Date().toISOString(),
+    completedAt,
     mode,
     rating,
     tierLabel: tier.label,
@@ -95,8 +109,9 @@ export function recordCompletedDraft(
 
   const updated: ProgressionData = {
     version: 1,
-    missionWins,
-    totalDrafts: progression.totalDrafts + 1,
+    ...(progression.missionWins && { missionWins: progression.missionWins }),
+    achievements,
+    totalDrafts,
     totalScore: progression.totalScore + rating,
     bestScores: progression.bestScores,
     bestAccuracy,
@@ -106,5 +121,8 @@ export function recordCompletedDraft(
     history: [snapshot, ...progression.history].slice(0, HISTORY_CAP),
   };
 
-  return { progression: updated, feedback };
+  return {
+    progression: updated,
+    feedback: { ...feedback, earnedAchievementIds, newAchievementIds },
+  };
 }

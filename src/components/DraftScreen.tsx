@@ -6,7 +6,6 @@ import type {
   GeneratedRound,
   RosterState,
 } from '../types';
-import { DraftMissions } from './DraftMissions';
 import { ConfirmDialog } from './ConfirmDialog';
 import { applyPick, redrawRound } from '../lib/draftEngine';
 import { DraftHeader } from './DraftHeader';
@@ -162,7 +161,6 @@ export function DraftScreen({
             ? `Last pick: ${draftState.picks.at(-1)!.card.season} ${draftState.picks.at(-1)!.card.name} → ${draftState.picks.at(-1)!.slot}`
             : 'QB · 2 RB · 2 WR · TE · FLEX (RB / WR / TE) · MVP (any position)'}
         </p>
-        <DraftMissions roster={roster} />
         <details className="scoring-note">
           <summary>How does scoring work?</summary>
           <p>
@@ -171,7 +169,7 @@ export function DraftScreen({
             of each board’s value you captured: the best card on a board scores
             full credit, the weakest scores none. The MVP board counts 10%
             extra. Values, fantasy points and the best card you passed are
-            revealed when the draft ends. Missions never change your grade.
+            revealed when the draft ends. Achievements never change your grade.
           </p>
         </details>
       </div>

@@ -24,13 +24,14 @@ npm run preview
 4. The eighth pick is the **MVP Showcase**: an elite season at any position, worth a 10% bonus to its card value.
 5. Get your **Draft Grade**, review every pick against the best card on its board, share the result, then run it back.
 
-Optional missions add a second reason to choose a card:
+Completed drafts unlock **achievements**, collected in the **Collection Book** (20 in all, rated Common, Rare or Legendary):
 
-- **Time Machine:** seasons from three different decades.
-- **Home Field:** three players from one NFL franchise.
-- **Road Trip:** eight different NFL franchises.
+- **Board Reading:** Eagle Eye, MVP Instinct, Clean Sheet, Comeback Kid, Front Office, War Room Genius, Perfect Board.
+- **Football Knowledge:** Old School, Sleeper Hit, Rookie Scout, History Buff.
+- **Hard Mode:** Film Room, Blindfolded, No Peeking.
+- **Milestones:** Rookie GM, Seasoned GM, Franchise Icon (drafts played); Collector, Archivist, Completionist (vault seasons).
 
-Mission stamps are awarded only on completed drafts. They never add rating points. Historical Rams, Chargers and Raiders abbreviations count as their current franchise. Cards also indicate whether they are new to your vault; discoveries are saved on completion.
+Achievements are checked only when a draft is completed and nothing is shown during the draft, so they never hint at which card is best. Repeatable achievements count every time they are earned (×N); milestones unlock once. Rarity tiers were set by simulating random and skilled players. Achievements never change your grade. Cards also indicate whether they are new to your vault; discoveries are saved on completion.
 
 ## Scoring
 
@@ -48,9 +49,9 @@ Accuracy maps to grades from F to A+ (`src/data/draftGrades.ts`). The thresholds
 
 ## Collection and persistence
 
-Completed drafts, separate Normal/Hard best grades, collection counts, and lifetime mission stamps are saved in browser local storage. The latest 25 rosters are retained; lifetime totals and stamps continue beyond that limit. Existing version-1 saves and card-ID migrations remain compatible. Vault search supports player, team abbreviation/name, and year, combined with position and collected/missing filters.
+Completed drafts, separate Normal/Hard best grades, collection counts, and achievement unlocks with lifetime counts are saved in browser local storage. The latest 25 rosters are retained; lifetime totals and achievement counts continue beyond that limit. Stamps from the retired side missions stay in saved data but are no longer shown. Existing version-1 saves and card-ID migrations remain compatible. Vault search supports player, team abbreviation/name, and year, combined with position and collected/missing filters.
 
-Progress is local to this browser and origin. An unfinished draft is not restored after a refresh. If storage is unavailable, play continues in memory. Reset Progression clears saved records and mission stamps after confirmation.
+Progress is local to this browser and origin. An unfinished draft is not restored after a refresh. If storage is unavailable, play continues in memory. Reset Progression clears saved records and achievements after confirmation.
 
 ## Validation
 
@@ -60,7 +61,7 @@ npm run lint
 npm run build
 ```
 
-`npm test` uses Vite's existing tooling to run the checks in Node; no new test dependency is required. It validates all 350 cards against the existing PPR/normalization formula, runs 3,000 complete draft simulations, and checks redraw limits, honest theme labels, duplicate-player prevention, scoring, missions, relocated franchises, storage isolation, history limits, old-save compatibility, migration, corrupt saves, and unavailable storage.
+`npm test` uses Vite's existing tooling to run the checks in Node; no new test dependency is required. It validates all 350 cards against the existing PPR/normalization formula, runs 3,000 complete draft simulations, and checks redraw limits, honest theme labels, duplicate-player prevention, scoring, draft grades, achievements, storage isolation, history limits, old-save compatibility, migration, corrupt saves, and unavailable storage.
 
 Developer checks no longer run at application launch. In particular, simulated progression never writes to the player's browser storage. Only the actual completion handler persists a draft, outside React state updaters and guarded against duplicate completion.
 
@@ -68,7 +69,7 @@ Developer checks no longer run at application launch. In particular, simulated p
 
 - `src/components/`: home, draft room, results, history, collection and appearance UI
 - `src/data/`: curated cards, round themes and rating tiers
-- `src/lib/`: draft/roster engine, scoring, missions, progression and themes
+- `src/lib/`: draft/roster engine, scoring, grades, achievements, progression and themes
 - `src/product.css`: broadcast-style presentation and responsive layouts using the existing theme tokens
 - `tests/game.test.ts`: deterministic gameplay and persistence regression checks
 

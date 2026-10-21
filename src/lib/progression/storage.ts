@@ -38,6 +38,32 @@ function sanitizeModeNumbers(value: unknown): { normal?: number; hard?: number }
   return result;
 }
 
+function sanitizeAchievements(value: unknown): ProgressionData['achievements'] {
+  if (!isRecord(value)) return {};
+  const result: NonNullable<ProgressionData['achievements']> = {};
+  for (const [id, record] of Object.entries(value)) {
+    if (
+      isRecord(record) &&
+      typeof record.count === 'number' &&
+      Number.isFinite(record.count) &&
+      record.count > 0 &&
+      typeof record.firstEarnedAt === 'string'
+    ) {
+      result[id] = {
+        count: Math.floor(record.count),
+        firstEarnedAt: record.firstEarnedAt,
+      };
+    }
+  }
+  return result;
+}
+
+function sanitizeStringList(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : [];
+}
+
 function sanitizeCardDraftCounts(value: unknown): Record<string, number> {
   if (!isRecord(value)) return {};
   const result: Record<string, number> = {};
@@ -111,9 +137,12 @@ function sanitizeHistory(value: unknown): ProgressionData['history'] {
           }
         : {}),
       roster,
-      missionIds: Array.isArray(item.missionIds)
-        ? item.missionIds.filter((id): id is string => typeof id === 'string')
-        : [],
+      ...(Array.isArray(item.achievementIds)
+        ? { achievementIds: sanitizeStringList(item.achievementIds) }
+        : {}),
+      ...(Array.isArray(item.missionIds)
+        ? { missionIds: sanitizeStringList(item.missionIds) }
+        : {}),
     });
   }
 
@@ -128,7 +157,10 @@ function sanitizeProgression(raw: unknown): ProgressionData {
 
   return {
     version: 1,
-    missionWins: sanitizeCardDraftCounts(raw.missionWins),
+    ...(isRecord(raw.missionWins) && {
+      missionWins: sanitizeCardDraftCounts(raw.missionWins),
+    }),
+    achievements: sanitizeAchievements(raw.achievements),
     totalDrafts: Math.max(0, Math.floor(sanitizeNumber(raw.totalDrafts))),
     totalScore: Math.max(0, sanitizeNumber(raw.totalScore)),
     bestScores: sanitizeModeNumbers(raw.bestScores),

@@ -1,4 +1,4 @@
-import { MISSIONS } from '../lib/missions';
+import { getAchievement } from '../lib/achievements';
 import type { CompletedDraftSnapshot } from '../lib/progression';
 import { ROSTER_SLOTS } from '../lib/roster';
 
@@ -58,10 +58,12 @@ export function HistoryEntry({ entry }: HistoryEntryProps) {
           </span>
         </div>
       </div>
-      {Boolean(entry.missionIds?.length) && (
-        <p className="history-missions">
-          {MISSIONS.filter((m) => entry.missionIds?.includes(m.id))
-            .map((m) => `✓ ${m.title}`)
+      {Boolean(entry.achievementIds?.length) && (
+        <p className="history-achievements">
+          {entry.achievementIds
+            ?.map((id) => getAchievement(id)?.title)
+            .filter(Boolean)
+            .map((title) => `★ ${title}`)
             .join(' · ')}
         </p>
       )}

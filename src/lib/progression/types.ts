@@ -21,12 +21,21 @@ export interface CompletedDraftSnapshot {
   gradeColor?: string;
   accuracy?: number;
   roster: HistoryRosterEntry[];
+  achievementIds?: string[];
+  /** Legacy side missions (retired). Kept in saves, no longer shown. */
   missionIds?: string[];
+}
+
+export interface AchievementRecord {
+  count: number;
+  firstEarnedAt: string;
 }
 
 export interface ProgressionData {
   version: 1;
+  /** Legacy side-mission stamps (retired). Kept in saves, no longer shown. */
   missionWins?: Record<string, number>;
+  achievements?: Record<string, AchievementRecord>;
   totalDrafts: number;
   totalScore: number;
   /** Legacy team-rating bests (old 44–212 scale). Kept, no longer shown. */
@@ -48,6 +57,10 @@ export interface ProgressionData {
 export interface CompletionFeedback {
   isPersonalBest: boolean;
   newCardIds: string[];
+  /** Achievements counted for this draft, in collection order. */
+  earnedAchievementIds: string[];
+  /** The subset unlocked for the first time. */
+  newAchievementIds: string[];
 }
 
 export interface PersonalRecordsSummary {

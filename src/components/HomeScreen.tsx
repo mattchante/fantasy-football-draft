@@ -1,5 +1,6 @@
 import { PLAYER_CARDS } from '../data/playerCards';
-import { MISSIONS } from '../lib/missions';
+import { getCollectionBook } from '../lib/achievements';
+import { AchievementTile } from './AchievementTile';
 import { PlayerCard } from './PlayerCard';
 import { useState } from 'react';
 import type { GameMode } from '../types';
@@ -15,6 +16,7 @@ interface HomeScreenProps {
   onStartDraft: () => void;
   onOpenHistory: () => void;
   onOpenVault: () => void;
+  onOpenAchievements: () => void;
   onResetProgression: () => void;
 }
 
@@ -25,6 +27,7 @@ export function HomeScreen({
   onStartDraft,
   onOpenHistory,
   onOpenVault,
+  onOpenAchievements,
   onResetProgression,
 }: HomeScreenProps) {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -37,6 +40,20 @@ export function HomeScreen({
   const collected = PLAYER_CARDS.filter(
     (card) => (progression.cardDraftCounts[card.id] ?? 0) > 0,
   ).length;
+  const book = getCollectionBook(progression);
+  const unlockedCount = book.filter((entry) => entry.count > 0).length;
+  const rarityOrder = { common: 0, rare: 1, legendary: 2 };
+  // Lead with the most reachable locked goals; fall back to trophies.
+  const featured = [
+    ...book
+      .filter((entry) => entry.count === 0)
+      .sort(
+        (a, b) =>
+          rarityOrder[a.achievement.rarity] - rarityOrder[b.achievement.rarity],
+      ),
+    ...book.filter((entry) => entry.count > 0).sort((a, b) => b.count - a.count),
+  ].slice(0, 3);
+
   const showcase = [
     'ladainian-tomlinson-2006',
     'randy-moss-2007',
@@ -139,29 +156,25 @@ export function HomeScreen({
             <p>Different eras. Same field.</p>
           </div>
         </div>
-        <section className="home-missions" aria-label="Mission collection">
+        <section className="home-achievements" aria-label="Achievements">
           <div className="section-kicker">
-            Build something worth remembering{' '}
-            <span>Optional missions · earned on completed drafts</span>
+            Collection book{' '}
+            <span>
+              {unlockedCount} / {book.length} achievements unlocked
+            </span>
           </div>
-          <div className="mission-grid">
-            {MISSIONS.map((mission) => (
-              <div
-                className={`mission ${(progression.missionWins?.[mission.id] ?? 0) > 0 ? 'mission--complete' : ''}`}
-                key={mission.id}
-              >
-                <div className="mission__top">
-                  <strong>{mission.title}</strong>
-                  <span>
-                    {(progression.missionWins?.[mission.id] ?? 0) > 0
-                      ? `✓ ×${progression.missionWins?.[mission.id]}`
-                      : mission.symbol}
-                  </span>
-                </div>
-                <p>{mission.description}</p>
-              </div>
+          <div className="achievement-grid">
+            {featured.map((entry) => (
+              <AchievementTile key={entry.achievement.id} entry={entry} />
             ))}
           </div>
+          <button
+            type="button"
+            className="home-achievements__open"
+            onClick={onOpenAchievements}
+          >
+            Open collection book →
+          </button>
         </section>
         <section
           className="home-dashboard"

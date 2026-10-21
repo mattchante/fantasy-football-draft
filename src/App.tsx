@@ -22,6 +22,7 @@ import { DraftScreen } from './components/DraftScreen';
 import { TeamReveal } from './components/TeamReveal';
 import { DraftHistoryScreen } from './components/DraftHistoryScreen';
 import { CardVaultScreen } from './components/CardVaultScreen';
+import { CollectionBookScreen } from './components/CollectionBookScreen';
 
 function App() {
   const [phase, setPhase] = useState<GamePhase>('home');
@@ -106,6 +107,7 @@ function App() {
         onStartDraft={beginFreshDraft}
         onOpenHistory={() => setPhase('history')}
         onOpenVault={() => setPhase('vault')}
+        onOpenAchievements={() => setPhase('achievements')}
         onResetProgression={handleResetProgression}
       />
     );
@@ -116,6 +118,15 @@ function App() {
       <DraftHistoryScreen
         progression={progression}
         onBack={() => setPhase('home')}
+      />
+    );
+  }
+
+  if (phase === 'achievements') {
+    return (
+      <CollectionBookScreen
+        progression={progression}
+        onBack={() => setPhase(draftState?.isComplete ? 'reveal' : 'home')}
       />
     );
   }
@@ -136,9 +147,11 @@ function App() {
         picks={draftState?.picks ?? []}
         gameMode={gameMode}
         completionFeedback={completionFeedback}
+        progression={progression}
         previousBest={previousBest}
         onDraftAgain={beginFreshDraft}
         onMainMenu={resetToHome}
+        onOpenAchievements={() => setPhase('achievements')}
       />
     );
   }
@@ -169,6 +182,7 @@ function App() {
       onStartDraft={beginFreshDraft}
       onOpenHistory={() => setPhase('history')}
       onOpenVault={() => setPhase('vault')}
+      onOpenAchievements={() => setPhase('achievements')}
       onResetProgression={handleResetProgression}
     />
   );

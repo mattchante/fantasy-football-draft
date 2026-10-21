@@ -3,17 +3,15 @@ import { startDraft, applyPick, redrawRound } from '../src/lib/draftEngine';
 import {
   getRosterCards,
   isRosterComplete,
-  createEmptyRoster,
 } from '../src/lib/roster';
 import {
   getTeamRatingResult,
   calculateRawScore,
   MVP_WEIGHT,
 } from '../src/lib/teamRating';
-import { getMissionProgress } from '../src/lib/missions';
+import { ACHIEVEMENTS, getCollectionBook } from '../src/lib/achievements';
 import { formatShareText, getDraftGrade } from '../src/lib/draftGrade';
 import { getDraftGradeTier } from '../src/data/draftGrades';
-import { PLAYER_CARDS } from '../src/data/playerCards';
 import {
   createEmptyProgression,
   loadProgression,
@@ -156,10 +154,29 @@ for (let run = 0; run < 1000; run++) {
   });
   progression = record.progression;
   assert.equal(progression.history[0].accuracy, grade.accuracy);
-  assert.equal(
-    progression.history[0].missionIds?.length,
-    getMissionProgress(roster).filter((m) => m.complete).length,
+  assert.deepEqual(
+    progression.history[0].achievementIds,
+    record.feedback.earnedAchievementIds,
   );
+  assert.ok(
+    record.feedback.newAchievementIds.every((id) =>
+      record.feedback.earnedAchievementIds.includes(id),
+    ),
+  );
+  if (run === 0) {
+    assert.ok(
+      record.feedback.newAchievementIds.includes('rookie-gm'),
+      'First draft unlocks Rookie GM',
+    );
+  }
+  if (run % 3 === 0) {
+    for (const id of ['perfect-board', 'clean-sheet', 'eagle-eye', 'mvp-instinct']) {
+      assert.ok(
+        record.feedback.earnedAchievementIds.includes(id),
+        `Best-value drafts earn ${id}`,
+      );
+    }
+  }
 }
 assert.equal(writes, 0);
 assert.equal(progression.totalDrafts, 1000);
@@ -168,45 +185,35 @@ assert.equal(
   Object.values(progression.cardDraftCounts).reduce((a, b) => a + b, 0),
   8000,
 );
-const missionRoster = createEmptyRoster();
-const template = PLAYER_CARDS[0];
-const slots = Object.keys(missionRoster) as (keyof typeof missionRoster)[];
-slots.forEach((slot, i) => {
-  missionRoster[slot] = {
-    ...template,
-    team: `TEAM${i}`,
-    season: [1998, 2001, 2010, 2020][i % 4],
-  };
-});
-assert.deepEqual(
-  getMissionProgress(missionRoster).map((m) => m.complete),
-  [true, false, true],
-);
-missionRoster.QB!.team = 'SAME';
-missionRoster.RB1!.team = 'SAME';
-missionRoster.RB2!.team = 'SAME';
-assert.deepEqual(
-  getMissionProgress(missionRoster).map((m) => m.complete),
-  [true, true, false],
-);
-missionRoster.QB!.team = 'LAR';
-missionRoster.RB1!.team = 'STL';
-missionRoster.RB2!.team = 'LAR';
-assert.equal(
-  getMissionProgress(missionRoster)[1].complete,
-  true,
-  'Relocated franchises count as the same team',
-);
-assert.equal(getMissionProgress(missionRoster)[2].value, 6);
+const achievements = progression.achievements ?? {};
+for (const achievement of ACHIEVEMENTS.filter((a) => !a.repeatable)) {
+  const record = achievements[achievement.id];
+  if (record) assert.equal(record.count, 1, `${achievement.id} unlocks once`);
+}
+assert.equal(achievements['seasoned-gm']?.count, 1, '25 drafts unlocks Seasoned GM');
+assert.equal(achievements['franchise-icon']?.count, 1);
 assert.ok(
-  Object.values(progression.missionWins ?? {}).some((count) => count > 25),
-  'Lifetime mission awards survive the history cap',
+  Object.values(achievements).some((record) => record.count > 25),
+  'Lifetime achievement counts survive the history cap',
+);
+assert.ok(
+  (achievements['film-room']?.count ?? 0) > 0,
+  'Hard-mode achievements are reachable',
+);
+const book = getCollectionBook(progression);
+assert.equal(book.length, ACHIEVEMENTS.length);
+assert.deepEqual(
+  getCollectionBook({ achievements: {}, totalDrafts: 3, cardDraftCounts: {} }).find(
+    (entry) => entry.achievement.id === 'seasoned-gm',
+  )?.progress,
+  { value: 3, target: 25 },
+  'Locked milestones report progress',
 );
 saveProgression(progression);
 assert.deepEqual(
   loadProgression(),
   progression,
-  'Progression round-trip includes missions, both modes and history',
+  'Progression round-trip includes achievements, both modes and history',
 );
 stored.set(STORAGE_KEY, '{bad-json');
 assert.equal(loadProgression().totalDrafts, 0);
@@ -217,6 +224,7 @@ stored.set(
     totalDrafts: 3,
     totalScore: 400,
     bestScores: { normal: 150 },
+    missionWins: { 'road-trip': 4 },
     cardDraftCounts: {},
     history: [],
   }),
@@ -232,6 +240,12 @@ assert.deepEqual(
   'Old team-rating bests do not carry over as draft-grade bests',
 );
 assert.equal(loadProgression().bestScores.normal, 150, 'Legacy bests are kept');
+assert.equal(
+  loadProgression().missionWins?.['road-trip'],
+  4,
+  'Retired mission stamps stay in saved data',
+);
+assert.deepEqual(loadProgression().achievements, {});
 Object.defineProperty(globalThis, 'localStorage', {
   configurable: true,
   get() {
@@ -241,5 +255,5 @@ Object.defineProperty(globalThis, 'localStorage', {
 assert.equal(loadProgression().totalDrafts, 0);
 assert.doesNotThrow(() => saveProgression(progression));
 console.log(
-  `PASS: 1,000 redraw drafts across all seven legal redraw rounds; ${openBoards} honest fallback boards; team strength ${Math.min(...ratings)}–${Math.max(...ratings)}. Mission, scoring, persistence, migration and storage isolation checks passed.`,
+  `PASS: 1,000 redraw drafts across all seven legal redraw rounds; ${openBoards} honest fallback boards; team strength ${Math.min(...ratings)}–${Math.max(...ratings)}. Achievement, scoring, persistence, migration and storage isolation checks passed.`,
 );

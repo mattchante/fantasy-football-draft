@@ -1,5 +1,4 @@
 import { assignPlayerToRoster } from '../lib/roster';
-import { getMissionProgress } from '../lib/missions';
 import type {
   RosterState,
   CardInfoLevel,
@@ -32,10 +31,6 @@ export function CardChoiceGrid({
     <div className="choice-grid">
       {cards.map((card, index) => {
         const assigned = assignPlayerToRoster(roster, card, isMvpRound);
-        const before = getMissionProgress(roster);
-        const advances = getMissionProgress(assigned.roster).filter(
-          (m, i) => m.value > before[i].value,
-        );
         return (
           <div
             className="choice"
@@ -57,17 +52,6 @@ export function CardChoiceGrid({
               selected={selectedCardId === card.id}
               disabled={disabled}
             />
-            <div className="choice__missions">
-              {advances.length ? (
-                advances.map((m) => (
-                  <span key={m.id}>
-                    {m.title} {m.value}/{m.target}
-                  </span>
-                ))
-              ) : (
-                <span>Build for the grade</span>
-              )}
-            </div>
           </div>
         );
       })}
