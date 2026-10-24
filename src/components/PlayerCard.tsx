@@ -7,6 +7,7 @@ import type {
 import { POSITION_COLORS, getStatusLabel } from '../lib/positionColors';
 import {
   formatSeason,
+  getBoxScore,
   getHeadshotSrc,
   getTeamDisplayName,
   parseHeadlineStat,
@@ -46,6 +47,8 @@ export function PlayerCard({
   const isVault = variant === 'vault';
   const isUndrafted = isVault && vaultState === 'undrafted';
   const isInteractive = Boolean(onSelect) && !disabled && !isVault;
+  // Easy boards show the full box score; results keep the two headline stats.
+  const boxScore = infoLevel === 'scouting' ? getBoxScore(card) : null;
   const headlineStats = card.headlineStats.slice(0, 2).map(parseHeadlineStat);
   const [photoFailed, setPhotoFailed] = useState(false);
   const photoSrc =
@@ -176,7 +179,7 @@ export function PlayerCard({
             </div>
           </div>
 
-          {/* Stats (Normal / Reveal) */}
+          {/* Stats (Easy / Reveal) */}
           {showStats ? (
             <div
               className={`player-card__stats ${isReveal ? 'player-card__stats--reveal' : ''}`}
@@ -215,7 +218,20 @@ export function PlayerCard({
                 </>
               )}
 
-              {headlineStats.map((stat) => (
+              {boxScore && (
+                <dl
+                  className={`player-card__box-score${boxScore.length === 4 ? ' player-card__box-score--pairs' : ''}`}
+                >
+                  {boxScore.map((stat) => (
+                    <div key={stat.label} className="player-card__box-stat">
+                      <dt>{stat.label}</dt>
+                      <dd>{stat.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+
+              {!boxScore && headlineStats.map((stat) => (
                 <div
                   key={stat.label + stat.value}
                   className="player-card__stat-row"

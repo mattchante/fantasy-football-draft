@@ -3,7 +3,7 @@ import { getCollectionBook } from '../lib/achievements';
 import { AchievementTile } from './AchievementTile';
 import { PlayerCard } from './PlayerCard';
 import { useState } from 'react';
-import type { GameMode } from '../types';
+import { MODE_LABELS, type GameMode } from '../types';
 import type { ProgressionData } from '../lib/progression';
 import { ConfirmDialog } from './ConfirmDialog';
 import { PersonalRecords } from './PersonalRecords';
@@ -96,27 +96,22 @@ export function HomeScreen({
               <div className="home-play__row">
                 <div className="home-play__mode">
                   <div className="mode-toggle">
-                    <button
-                      type="button"
-                      className={`mode-toggle-btn ${gameMode === 'normal' ? 'mode-toggle-btn--active' : ''}`}
-                      aria-pressed={gameMode === 'normal'}
-                      onClick={() => onGameModeChange('normal')}
-                    >
-                      Normal
-                    </button>
-                    <button
-                      type="button"
-                      className={`mode-toggle-btn ${gameMode === 'hard' ? 'mode-toggle-btn--active' : ''}`}
-                      aria-pressed={gameMode === 'hard'}
-                      onClick={() => onGameModeChange('hard')}
-                    >
-                      Hard
-                    </button>
+                    {(['normal', 'hard'] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        className={`mode-toggle-btn ${gameMode === mode ? 'mode-toggle-btn--active' : ''}`}
+                        aria-pressed={gameMode === mode}
+                        onClick={() => onGameModeChange(mode)}
+                      >
+                        {MODE_LABELS[mode]}
+                      </button>
+                    ))}
                   </div>
                   <p className="home-play__hard-hint">
                     {gameMode === 'hard'
-                      ? 'Trust your ball knowledge. Stats revealed at the finish.'
-                      : 'Box scores only. Spot the best season on every board.'}
+                      ? 'Season only, no stats. Trust your ball knowledge.'
+                      : 'Full box scores on every card. Spot the best season.'}
                   </p>
                 </div>
                 <button

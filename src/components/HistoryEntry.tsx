@@ -1,6 +1,7 @@
 import { getAchievement } from '../lib/achievements';
 import type { CompletedDraftSnapshot } from '../lib/progression';
 import { ROSTER_SLOTS } from '../lib/roster';
+import { MODE_LABELS } from '../types';
 
 interface HistoryEntryProps {
   entry: CompletedDraftSnapshot;
@@ -51,7 +52,7 @@ export function HistoryEntry({ entry }: HistoryEntryProps) {
         </div>
         <div className="history-entry__meta">
           <span className="history-entry__mode">
-            {entry.mode === 'hard' ? 'Hard' : 'Normal'}
+            {MODE_LABELS[entry.mode]}
           </span>
           <span className="history-entry__date">
             {formatDate(entry.completedAt)}

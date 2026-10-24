@@ -18,7 +18,7 @@ npm run preview
 
 ## The game
 
-1. Choose **Normal** (box-score stats only) or **Hard** (identity and season only). Card values and fantasy points stay hidden until the draft ends.
+1. Choose **Normal** (the default: player, position, team and season, no stats) or **Easy** (adds each season's full box score: yards, touchdowns, receptions, interceptions and games). Card values and fantasy points stay hidden in both until the draft ends.
 2. Draft seven players into QB, RB1, RB2, WR1, WR2, TE and FLEX. FLEX accepts RB, WR or TE; cards show exactly where they will go.
 3. Once per draft, optionally **redraw the board**. All three options are replaced and the new board may be worse. Redraw is unavailable in the MVP round.
 4. The eighth pick is the **MVP Showcase**: an elite season at any position, worth a 10% bonus to its card value.
@@ -28,7 +28,7 @@ Completed drafts unlock **achievements**, collected in the **Collection Book** (
 
 - **Board Reading:** Eagle Eye, MVP Instinct, Clean Sheet, Comeback Kid, Front Office, War Room Genius, Perfect Board.
 - **Football Knowledge:** Old School, Sleeper Hit, Rookie Scout, History Buff.
-- **Hard Mode:** Film Room, Blindfolded, No Peeking.
+- **Normal Mode:** Film Room, Blindfolded, No Peeking.
 - **Milestones:** Rookie GM, Seasoned GM, Franchise Icon (drafts played); Collector, Archivist, Completionist (vault seasons).
 
 Achievements are checked only when a draft is completed and nothing is shown during the draft, so they never hint at which card is best. Repeatable achievements count every time they are earned (×N); milestones unlock once. Rarity tiers were set by simulating random and skilled players. Achievements never change your grade. Cards also indicate whether they are new to your vault; discoveries are saved on completion.
@@ -55,7 +55,7 @@ Cards show a headshot of the player behind their name: 226 of 234 players, linke
 
 ## Collection and persistence
 
-Completed drafts, separate Normal/Hard best grades, collection counts, and achievement unlocks with lifetime counts are saved in browser local storage. The latest 25 rosters are retained; lifetime totals and achievement counts continue beyond that limit. Stamps from the retired side missions stay in saved data but are no longer shown. Existing version-1 saves and card-ID migrations remain compatible. Vault search supports player, team abbreviation/name, and year, combined with position and collected/missing filters.
+Completed drafts, separate Normal/Easy best grades, collection counts, and achievement unlocks with lifetime counts are saved in browser local storage. The latest 25 rosters are retained; lifetime totals and achievement counts continue beyond that limit. Stamps from the retired side missions stay in saved data but are no longer shown. Existing version-1 saves and card-ID migrations remain compatible. Saves keep the original mode ids: `hard` is shown as Normal and `normal` as Easy. Vault search supports player, team abbreviation/name, and year, combined with position and collected/missing filters.
 
 Progress is local to this browser and origin. An unfinished draft is not restored after a refresh. If storage is unavailable, play continues in memory. Reset Progression clears saved records and achievements after confirmation.
 

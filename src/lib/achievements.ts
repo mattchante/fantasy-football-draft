@@ -43,7 +43,7 @@ export interface Achievement {
 export const ACHIEVEMENT_CATEGORIES: { id: AchievementCategory; title: string }[] = [
   { id: 'board', title: 'Board Reading' },
   { id: 'knowledge', title: 'Football Knowledge' },
-  { id: 'hard', title: 'Hard Mode' },
+  { id: 'hard', title: 'Normal Mode' },
   { id: 'milestone', title: 'Milestones' },
 ];
 
@@ -203,11 +203,11 @@ export const ACHIEVEMENTS: Achievement[] = [
       ).length >= 3,
   },
 
-  // Hard mode
+  // Normal (no-stats) mode
   {
     id: 'film-room',
     title: 'Film Room',
-    description: 'Earn a B or better in Hard mode.',
+    description: 'Earn a B or better in Normal mode.',
     category: 'hard',
     rarity: 'rare',
     repeatable: true,
@@ -216,7 +216,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'blindfolded',
     title: 'Blindfolded',
-    description: 'Earn an A- or better in Hard mode.',
+    description: 'Earn an A- or better in Normal mode.',
     category: 'hard',
     rarity: 'legendary',
     repeatable: true,
@@ -225,7 +225,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'no-peeking',
     title: 'No Peeking',
-    description: 'Finish a Hard mode draft without a single missed pick.',
+    description: 'Finish a Normal mode draft without a single missed pick.',
     category: 'hard',
     rarity: 'legendary',
     repeatable: true,

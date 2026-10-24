@@ -1,5 +1,11 @@
 import { getDraftGradeTier } from '../data/draftGrades';
-import type { DraftedPick, DraftGradeTier, PlayerCard } from '../types';
+import {
+  MODE_LABELS,
+  type DraftedPick,
+  type DraftGradeTier,
+  type GameMode,
+  type PlayerCard,
+} from '../types';
 import { MVP_WEIGHT } from './teamRating';
 
 /** A pick within this many value points of the board's best counts as close. */
@@ -77,7 +83,7 @@ const OUTCOME_EMOJI: Record<PickOutcome, string> = {
 
 export function formatShareText(
   result: DraftGradeResult,
-  mode: 'normal' | 'hard',
+  mode: GameMode,
   teamStrength: number,
   teamTier: string,
 ): string {
@@ -85,7 +91,7 @@ export function formatShareText(
     .map((round) => (round.isMvp && round.outcome === 'best' ? '⭐' : OUTCOME_EMOJI[round.outcome]))
     .join('');
   return [
-    `Draft Cards · ${mode === 'hard' ? 'Hard' : 'Normal'}`,
+    `Draft Cards · ${MODE_LABELS[mode]}`,
     `${result.tier.grade} · ${result.tier.label} · ${result.accuracy}% accuracy`,
     squares,
     `Team strength ${teamStrength} · ${teamTier}`,

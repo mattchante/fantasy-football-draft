@@ -825,6 +825,13 @@ button:disabled {
   .choice .player-card__stat-row {
     font-size: 10px;
   }
+  .choice .player-card__box-score {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 8px;
+  }
+  .choice .player-card__box-stat dd {
+    font-size: 13px;
+  }
   .draft-sidebar {
     display: block;
   }

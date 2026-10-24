@@ -608,6 +608,37 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.player-card__box-score {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem 0.75rem;
+  margin: 0;
+}
+
+.player-card__box-score--pairs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.player-card__box-stat {
+  min-width: 0;
+}
+
+.player-card__box-stat dt {
+  font-size: 0.5625rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--theme-text-muted);
+  white-space: nowrap;
+}
+
+.player-card__box-stat dd {
+  margin: 0.125rem 0 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
 .player-card__chips {
   display: flex;
   flex-wrap: wrap;

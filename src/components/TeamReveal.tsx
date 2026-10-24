@@ -8,6 +8,7 @@ import type {
   GameMode,
   RosterState,
 } from '../types';
+import { MODE_LABELS } from '../types';
 import { getTeamRatingResult } from '../lib/teamRating';
 import { formatShareText, getDraftGrade } from '../lib/draftGrade';
 import { getCollectionBook } from '../lib/achievements';
@@ -92,7 +93,7 @@ export function TeamReveal({
     <div className="min-h-screen bg-field-pattern px-4 py-12 md:px-8">
       <div className="max-w-6xl mx-auto">
         <p className="text-center text-xs uppercase tracking-widest text-theme-faint mb-4">
-          {gameMode === 'hard' ? 'Hard Mode' : 'Normal Mode'} — Every value
+          {MODE_LABELS[gameMode]} Mode — Every value
           revealed
         </p>
 
@@ -104,7 +105,7 @@ export function TeamReveal({
           <DraftGradeDisplay tier={grade.tier} accuracy={accuracy} />
           <div className="result-story">
             <span className="section-kicker">
-              FINAL WHISTLE / {gameMode.toUpperCase()}
+              FINAL WHISTLE / {MODE_LABELS[gameMode].toUpperCase()}
             </span>
             <h2>
               {completionFeedback?.isPersonalBest
@@ -144,7 +145,9 @@ export function TeamReveal({
             <p className="result-next">
               {nextGrade
                 ? `${nextGrade.min - accuracy} more point${nextGrade.min - accuracy === 1 ? '' : 's'} to reach ${nextGrade.grade}.`
-                : 'Top grade. Try it with no stats at all in Hard mode.'}
+                : gameMode === 'hard'
+                  ? 'Top grade. No stats needed.'
+                  : 'Top grade. Try it with no stats at all in Normal mode.'}
             </p>
           </div>
         </div>
