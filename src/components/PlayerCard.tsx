@@ -73,6 +73,7 @@ export function PlayerCard({
         'player-card',
         `player-card--${variant}`,
         !showStats && 'player-card--identity',
+        photoSrc && 'player-card--photo',
         isInteractive && 'player-card--interactive',
         selected && 'player-card--selected',
         disabled && 'player-card--disabled',
@@ -148,16 +149,18 @@ export function PlayerCard({
               .join(' ')}
           >
             {photoSrc && (
-              <img
-                className="player-card__photo"
-                src={photoSrc}
-                alt=""
-                aria-hidden
-                loading="lazy"
-                decoding="async"
-                referrerPolicy="no-referrer"
-                onError={() => setPhotoFailed(true)}
-              />
+              <div className="player-card__portrait">
+                <img
+                  className="player-card__photo"
+                  src={photoSrc}
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  decoding="async"
+                  referrerPolicy="no-referrer"
+                  onError={() => setPhotoFailed(true)}
+                />
+              </div>
             )}
             <span
               className="player-card__pos-badge"

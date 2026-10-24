@@ -49,7 +49,7 @@ Accuracy maps to grades from F to A+ (`src/data/draftGrades.ts`). The thresholds
 
 ## Player photos
 
-Cards show a headshot of the player behind their name: 226 of 234 players, linked from NFL.com's image CDN or, where NFL only has a placeholder, ESPN's. Images are hotlinked at card size and are not stored in this repo; they belong to their owners, and the game is a personal, non-commercial project. A player keeps one photo across all of their cards, so the uniform may not match the card's season. Players with no real photo, and any image that fails to load, show the jersey-number art instead.
+Cards show a headshot of the player in its own panel above their name: 226 of 234 players, linked from NFL.com's image CDN or, where NFL only has a placeholder, ESPN's. Images are hotlinked at card size and are not stored in this repo; they belong to their owners, and the game is a personal, non-commercial project. A player keeps one photo across all of their cards, so the uniform may not match the card's season. Players with no real photo, and any image that fails to load, show the jersey-number art instead.
 
 `python3 scripts/enrich_headshots.py` rebuilds the links from the cached nflverse rosters, checks every NFL photo against NFL's placeholder helmet, and writes `scripts/headshot-enrichment-report.json`.
 
