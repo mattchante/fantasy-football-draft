@@ -114,7 +114,16 @@ export type GamePhase =
   | 'vault'
   | 'achievements';
 
+/**
+ * Saved drafts keep these original ids: 'normal' is shown as Easy (box
+ * scores) and 'hard' as Normal (no stats). Use MODE_LABELS for display.
+ */
 export type GameMode = 'normal' | 'hard';
+
+export const MODE_LABELS: Record<GameMode, string> = {
+  normal: 'Easy',
+  hard: 'Normal',
+};
 
 export type CardInfoLevel = 'full' | 'scouting' | 'identity';
 

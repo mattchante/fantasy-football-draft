@@ -6,6 +6,7 @@ import type {
   GeneratedRound,
   RosterState,
 } from '../types';
+import { MODE_LABELS } from '../types';
 import { ConfirmDialog } from './ConfirmDialog';
 import { applyPick, redrawRound } from '../lib/draftEngine';
 import { DraftHeader } from './DraftHeader';
@@ -88,8 +89,8 @@ export function DraftScreen({
           <span className="brand-mark">DC /</span> DRAFT ROOM{' '}
           <span>
             {gameMode === 'hard'
-              ? 'HARD · STATS HIDDEN'
-              : 'NORMAL · BOX SCORES'}
+              ? 'NORMAL · SEASON ONLY'
+              : 'EASY · BOX SCORES'}
           </span>
         </div>
         <DraftHeader pickNumber={pickNumber} />
@@ -145,7 +146,7 @@ export function DraftScreen({
 
           <aside className="draft-sidebar">
             <div className="record-target">
-              <span>PERSONAL BEST · {gameMode.toUpperCase()}</span>
+              <span>PERSONAL BEST · {MODE_LABELS[gameMode].toUpperCase()}</span>
               <strong>{formatGradeScore(bestAccuracy)}</strong>
               <p>
                 {bestAccuracy !== undefined

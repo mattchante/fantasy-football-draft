@@ -29,7 +29,7 @@ function App() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [phase]);
-  const [gameMode, setGameMode] = useState<GameMode>('normal');
+  const [gameMode, setGameMode] = useState<GameMode>('hard');
   const [draftState, setDraftState] = useState<DraftState | null>(null);
   const [roster, setRoster] = useState<RosterState>(createEmptyRoster());
   const [draftSessionId, setDraftSessionId] = useState(0);

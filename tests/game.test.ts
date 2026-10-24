@@ -12,7 +12,7 @@ import {
 import { ACHIEVEMENTS, getCollectionBook } from '../src/lib/achievements';
 import { formatShareText, getDraftGrade } from '../src/lib/draftGrade';
 import { getDraftGradeTier } from '../src/data/draftGrades';
-import { getHeadshotSrc } from '../src/lib/playerDisplay';
+import { getBoxScore, getHeadshotSrc } from '../src/lib/playerDisplay';
 import { PLAYER_CARDS } from '../src/data/playerCards';
 import {
   createEmptyProgression,
@@ -143,7 +143,11 @@ for (let run = 0; run < 1000; run++) {
   }
   if (run === 0) {
     const share = formatShareText(grade, 'normal', rating, tier.label);
-    assert.match(share, /^Draft Cards · Normal\n/);
+    assert.match(share, /^Draft Cards · Easy\n/);
+    assert.match(
+      formatShareText(grade, 'hard', rating, tier.label),
+      /^Draft Cards · Normal\n/,
+    );
     assert.equal([...share.split('\n')[2]].length, 8, 'One square per pick');
   }
   const record = recordCompletedDraft({
@@ -187,6 +191,18 @@ assert.equal(
 assert.equal(
   getHeadshotSrc('https://a.espncdn.com/i/headshots/nfl/players/full/10147.png'),
   'https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/10147.png&w=480&h=349',
+);
+for (const card of PLAYER_CARDS) {
+  const boxScore = getBoxScore(card);
+  assert.ok(boxScore.length >= 4 && boxScore.length <= 6, `${card.id} box score fits`);
+  assert.equal(boxScore.at(-1)?.label, 'GAMES');
+  assert.ok(boxScore.every((stat) => /^-?\d[\d,]*$/.test(stat.value)));
+}
+const receiver = PLAYER_CARDS.find((card) => card.position === 'WR')!;
+assert.deepEqual(
+  getBoxScore(receiver).slice(0, 3).map((stat) => stat.label),
+  ['REC', 'REC YDS', 'REC TD'],
+  'Receivers lead with catches and yards',
 );
 assert.ok(
   PLAYER_CARDS.filter((card) => card.imageUrl).length >= 330,

@@ -1,3 +1,5 @@
+import type { PlayerCard, PlayerStats, Position } from '../types';
+
 const NAME_SUFFIXES = ['Jr.', 'Sr.', 'II', 'III', 'IV', 'V'] as const;
 
 const SURNAME_PARTICLES = new Set([
@@ -119,6 +121,48 @@ export function parseHeadlineStat(stat: string): ParsedHeadlineStat {
     return { value: match[1], label: match[2].toUpperCase() };
   }
   return { value: stat, label: '' };
+}
+
+type StatKey = keyof PlayerStats;
+
+const STAT_LABELS: Record<StatKey, string> = {
+  passYds: 'PASS YDS',
+  passTD: 'PASS TD',
+  interceptions: 'INT',
+  rushYds: 'RUSH YDS',
+  rushTD: 'RUSH TD',
+  receptions: 'REC',
+  recYds: 'REC YDS',
+  recTD: 'REC TD',
+  games: 'GAMES',
+};
+
+/** Always shown for the position, even when zero. */
+const CORE_STATS: Record<Position, StatKey[]> = {
+  QB: ['passYds', 'passTD', 'interceptions', 'rushYds', 'rushTD', 'games'],
+  RB: ['rushYds', 'rushTD', 'receptions', 'recYds', 'recTD', 'games'],
+  WR: ['receptions', 'recYds', 'recTD', 'games'],
+  TE: ['receptions', 'recYds', 'recTD', 'games'],
+};
+
+/** Shown only when the season has a meaningful amount. */
+const EXTRA_STATS: Partial<Record<Position, { key: StatKey; min: number }[]>> = {
+  WR: [{ key: 'rushYds', min: 50 }],
+  TE: [{ key: 'rushYds', min: 50 }],
+};
+
+/** The season's box score for Easy boards, in position order. */
+export function getBoxScore(card: PlayerCard): ParsedHeadlineStat[] {
+  const extras = (EXTRA_STATS[card.position] ?? [])
+    .filter(({ key, min }) => (card.stats[key] ?? 0) >= min)
+    .map(({ key }) => key);
+  // Extras go before Games, which always closes the line.
+  const core = CORE_STATS[card.position];
+  const keys = [...core.slice(0, -1), ...extras, core[core.length - 1]];
+  return keys.map((key) => ({
+    value: (card.stats[key] ?? 0).toLocaleString('en-US'),
+    label: STAT_LABELS[key],
+  }));
 }
 
 const NFL_IMAGE_TRANSFORM = 'f_auto,q_auto';
