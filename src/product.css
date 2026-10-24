@@ -806,11 +806,6 @@ button:disabled {
     grid-column: 1 / -1;
     padding: 9px 12px;
   }
-  .choice .player-card__hard-identity {
-    align-items: center;
-    background: transparent;
-    border: 0;
-  }
   .choice .player-card__ghost-number {
     left: 25%;
     top: 50%;
@@ -891,12 +886,6 @@ button:disabled {
     grid-column: 1 / -1;
     min-height: 142px;
     padding-top: 22px;
-  }
-  .choice .player-card--identity .player-card__hard-identity {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    padding: 0;
   }
   .choice .player-card--identity .player-card__ghost-number {
     left: 80%;

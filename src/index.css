@@ -665,16 +665,6 @@ body {
   border: 1px solid transparent;
 }
 
-.player-card__hard-identity {
-  position: relative;
-  z-index: 2;
-  padding: 1rem 1rem 1.25rem;
-  border-top: 1px solid var(--theme-border-subtle);
-  background: linear-gradient(180deg, var(--theme-bg-panel) 0%, var(--theme-bg-secondary) 100%);
-  display: flex;
-  justify-content: center;
-}
-
 .player-card__drafted-overlay {
   position: absolute;
   inset: 0;

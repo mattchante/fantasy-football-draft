@@ -179,8 +179,8 @@ export function PlayerCard({
             </div>
           </div>
 
-          {/* Stats (Easy / Reveal) */}
-          {showStats ? (
+          {/* Stats (Easy / Reveal). Normal boards show identity only. */}
+          {showStats && (
             <div
               className={`player-card__stats ${isReveal ? 'player-card__stats--reveal' : ''}`}
             >
@@ -260,12 +260,6 @@ export function PlayerCard({
                   {card.flavorTag}
                 </span>
               </div>
-            </div>
-          ) : (
-            <div className="player-card__hard-identity">
-              <span className="player-card__chip player-card__chip--neutral">
-                {getStatusLabel(card.status)}
-              </span>
             </div>
           )}
           {onSelect && (
